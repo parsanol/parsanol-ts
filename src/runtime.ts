@@ -17,21 +17,34 @@ interface WasmModule {
 }
 
 /** Walk up from this module to the package root (which holds package.json). */
-function packageRoot(): string {
+const packageRootCache = (() => {
   let dir = dirname(fileURLToPath(import.meta.url));
   for (; !existsSync(join(dir, "package.json")); dir = dirname(dir)) {
     if (dir === dirname(dir)) throw new Error("package.json not found above the parg runtime");
   }
   return dir;
+})();
+
+function packageRoot(): string {
+  return packageRootCache;
 }
 
 // The vendored wasm glue is CommonJS and lives outside the compiled tree,
-// so resolve it against the package root at runtime.
+// so resolve it against the package root at runtime. Loading is deferred
+// to the first artifact construction: importing this module costs
+// nothing, and the ~1.5 MB wasm compiles only when parsing is real.
 const require = createRequire(import.meta.url);
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const wasm: WasmModule = require(
-  join(packageRoot(), "vendor", "parsanol-wasm", "parsanol.cjs"),
-);
+let wasmModule: WasmModule | null = null;
+
+function wasm(): WasmModule {
+  if (wasmModule === null) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    wasmModule = require(
+      join(packageRoot(), "vendor", "parsanol-wasm", "parsanol.cjs"),
+    ) as WasmModule;
+  }
+  return wasmModule;
+}
 
 /** A field requirement from the binding-requirements schema. */
 export interface FieldRequirement {
@@ -64,15 +77,15 @@ export class PargRuntime {
   readonly envelope: Record<string, unknown>;
 
   constructor(artifactJson: string, entry?: string) {
-    this.envelope = JSON.parse(artifactJson) as Record<string, unknown>;
-    this.artifact = new wasm.PargArtifactJs(artifactJson);
+    const parsed = JSON.parse(artifactJson) as Record<string, unknown>;
+    this.envelope = parsed;
+    this.artifact = new (wasm().PargArtifactJs)(artifactJson);
     this.schema = JSON.parse(this.artifact.schema()) as Schema;
     this.renderSpec =
-      (this.envelope["render"] as Record<string, RenderSegment[]>) ?? {};
+      (parsed["render"] as Record<string, RenderSegment[]>) ?? {};
     // The compiler bakes default_entry: JSON key order is not preserved
     // across engines, so the sorted entry list cannot rederive it.
-    this.defaultEntry =
-      (JSON.parse(artifactJson)["default_entry"] as string | undefined) ?? null;
+    this.defaultEntry = (parsed["default_entry"] as string | undefined) ?? null;
     this.entry = entry ?? this.defaultEntry ?? this.artifact.entryNames()[0];
   }
 
