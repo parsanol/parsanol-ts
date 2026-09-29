@@ -1,0 +1,41 @@
+{
+  "name": "@parsanol/ts",
+  "version": "0.10.0",
+  "description": "PARG artifact runtime for TypeScript \u2014 checksum-verified artifact load, wasm parse, bindings, schema-driven materialization",
+  "type": "module",
+  "main": "dist/runtime.js",
+  "types": "dist/runtime.d.ts",
+  "exports": {
+    ".": "./dist/runtime.js",
+    "./suite": "./dist/suite.js"
+  },
+  "files": [
+    "dist/",
+    "vendor/parsanol-wasm/"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && npx tsc -p tsconfig.test.json && node --test dist-test/test/*.test.js",
+    "refresh-wasm": "bash scripts/refresh-wasm.sh"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parsanol/parsanol-ts"
+  },
+  "keywords": [
+    "parser",
+    "peg",
+    "parg",
+    "wasm",
+    "rust"
+  ],
+  "private": false,
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "typescript": "^7.0.2"
+  }
+}

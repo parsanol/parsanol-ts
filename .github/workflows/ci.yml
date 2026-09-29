@@ -1,0 +1,26 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: pubid/pubid-grammar
+          path: pubid-grammar
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install
+      - name: Wasm freshness
+        run: bash scripts/check-wasm-freshness.sh
+        env:
+          PARSANOL_RS: ${{ github.workspace }}/..
+      - name: Build + test (artifact-gated against the baked corpus)
+        run: npm test
+        env:
+          PARG_ARTIFACT_DIR: ${{ github.workspace }}/pubid-grammar/artifacts

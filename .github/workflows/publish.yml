@@ -1,0 +1,22 @@
+name: npm Publish
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+# Trusted publishing (OIDC): register @parsanol/ts on npmjs.com with
+# this repository + workflow before the first publish.
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install
+      - run: npm run build
+      - run: npm publish
