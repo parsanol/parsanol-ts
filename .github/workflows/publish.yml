@@ -1,13 +1,22 @@
-name: npm Publish
+name: Release npm (@parsanol/ts)
+
+# Trusted publishing: keyless OIDC. Requires the owner-side registration
+# on npmjs.com — package @parsanol/ts → Settings → Trusted Publishing:
+#   Repository: parsanol/parsanol-ts | Workflow: publish.yml (no environment)
+
 on:
   workflow_dispatch:
-  release:
-    types: [published]
-# Trusted publishing (OIDC): register @parsanol/ts on npmjs.com with
-# this repository + workflow before the first publish.
+  push:
+    tags: ["v*"]
+
 permissions:
   contents: read
-  id-token: write
+  id-token: write # the OIDC token that replaces the npm token
+
+concurrency:
+  group: release-npm
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -19,4 +28,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm install
       - run: npm run build
-      - run: npm publish
+      - name: Publish with provenance
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: "" # explicit: trusted publishing only, no token
