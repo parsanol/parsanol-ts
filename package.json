@@ -1,7 +1,7 @@
 {
   "name": "parsanol",
   "version": "0.10.0",
-  "description": "PARG artifact runtime for TypeScript \u2014 checksum-verified artifact load, wasm parse, bindings, schema-driven materialization",
+  "description": "PARG artifact runtime for TypeScript — checksum-verified artifact load, wasm parse, bindings, schema-driven materialization",
   "type": "module",
   "main": "dist/runtime.js",
   "types": "dist/runtime.d.ts",
@@ -26,7 +26,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/parsanol/parsanol-ts"
+    "url": "git+https://github.com/parsanol/parsanol-ts.git"
   },
   "keywords": [
     "parser",
