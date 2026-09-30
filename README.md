@@ -1,4 +1,4 @@
-# parsanol-ts
+# parsanol
 
 The PARG artifact runtime for TypeScript: load a checksum-verified
 `.parg` artifact, parse through the parsanol wasm engine, apply the
