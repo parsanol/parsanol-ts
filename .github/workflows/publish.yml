@@ -1,7 +1,7 @@
-name: Release npm (@parsanol/ts)
+name: Release npm (parsanol)
 
 # Trusted publishing: keyless OIDC. Requires the owner-side registration
-# on npmjs.com — package @parsanol/ts → Settings → Trusted Publishing:
+# on npmjs.com — package parsanol → Settings → Trusted Publishing:
 #   Repository: parsanol/parsanol-ts | Workflow: publish.yml (no environment)
 
 on:

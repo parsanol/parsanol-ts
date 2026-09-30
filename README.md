@@ -11,7 +11,7 @@ the contract.
 ## Usage
 
 ```ts
-import { PargRuntime } from "@parsanol/ts";
+import { PargRuntime } from "parsanol";
 
 // PARG_ARTIFACT_DIR (or an explicit dir) holds the baked artifacts.
 const rt = PargRuntime.load("iso", undefined, process.env.PARG_ARTIFACT_DIR);
