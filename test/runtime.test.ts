@@ -32,6 +32,15 @@ function syntheticArtifact(): string {
 }
 
 describe("PargRuntime", () => {
+  it("rejects a dynamic artifact at the boundary (parsanol-ruby#129)", () => {
+    const dynamic = JSON.parse(syntheticArtifact());
+    dynamic.dynamic = true;
+    assert.throws(
+      () => new PargRuntime(JSON.stringify(dynamic)),
+      /parsanol-ruby#129/i,
+    );
+  });
+
   it("rejects an envelope whose checksum does not verify", () => {
     const tampered = JSON.parse(syntheticArtifact());
     tampered.checksum = "sha256:deadbeef";
