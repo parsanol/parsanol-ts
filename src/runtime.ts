@@ -79,6 +79,17 @@ export class PargRuntime {
   constructor(artifactJson: string, entry?: string) {
     const parsed = JSON.parse(artifactJson) as Record<string, unknown>;
     this.envelope = parsed;
+    // Dynamic artifacts (parsanol-ruby#129 runtime state / custom atoms)
+    // carry Ruby closures; their grammars deserialize portably but parse
+    // only on a Ruby runtime. Fail here, at the boundary, with the
+    // routing answer instead of a wasm deserialization error deep in the
+    // atom tree.
+    if (parsed["dynamic"] === true) {
+      throw new Error(
+        "this artifact uses PARG runtime state or custom atoms and parses " +
+          "only on a Ruby runtime (parsanol-ruby#129)",
+      );
+    }
     this.artifact = new (wasm().PargArtifactJs)(artifactJson);
     this.schema = JSON.parse(this.artifact.schema()) as Schema;
     this.renderSpec =
