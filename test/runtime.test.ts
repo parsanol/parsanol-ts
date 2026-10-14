@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, writeFileSync } from "node:fs";
@@ -27,7 +28,34 @@ function syntheticArtifact(): string {
     tests: [],
     docs: {},
     source: 'grammar Synthetic version "0.0.0" {\n  identifier = "ab"\n  entry identifier: identifier\n}\n',
+    source_hash: "",
+    compiler_version: "test",
   };
+  envelope.source_hash =
+    `sha256:${createHash("sha256").update(envelope.source).digest("hex")}`;
+  return withChecksum(envelope);
+}
+
+// The compiler's canonical form: recursively key-sorted, JSON.stringify
+// escaping — byte-compatible with ruby's Compiler.checksum and the wasm
+// verifier for ASCII envelopes.
+function canon(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canon);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+        .map(([k, v]) => [k, canon(v)]),
+    );
+  }
+  return value;
+}
+
+function withChecksum(envelope: Record<string, unknown>): string {
+  const payload: Record<string, unknown> = { ...envelope };
+  delete payload.checksum;
+  envelope.checksum =
+    `sha256:${createHash("sha256").update(JSON.stringify(canon(payload))).digest("hex")}`;
   return JSON.stringify(envelope);
 }
 
@@ -50,14 +78,28 @@ describe("PargRuntime", () => {
     assert.throws(() => PargRuntime.fromFile(path), /checksum/i);
   });
 
+  it("exposes provenance and answers compiledFrom (parsanol-ts#5)", () => {
+    const rt = new PargRuntime(syntheticArtifact());
+    assert.equal(rt.compilerVersion, "test");
+    assert.match(rt.sourceHash as string, /^sha256:[0-9a-f]{64}$/);
+    const source = 'grammar Synthetic version "0.0.0" {\n  identifier = "ab"\n  entry identifier: identifier\n}\n';
+    assert.equal(rt.compiledFrom(source), true);
+    assert.equal(rt.compiledFrom(`${source}\n`), false);
+    assert.equal(rt.shape, "parsanol-tree/v2");
+    // legacy artifact without a source hash: unverifiable, not stale
+    const legacy = JSON.parse(syntheticArtifact());
+    delete legacy.source_hash;
+    const rt2 = new PargRuntime(withChecksum(legacy));
+    assert.equal(rt2.sourceHash, null);
+    assert.equal(rt2.compiledFrom(source), null);
+  });
+
   it("exposes entries and the default entry", () => {
     const dir = mkdtempSync(join(tmpdir(), "parg-"));
     const path = join(dir, "synthetic.json");
-    writeFileSync(path, syntheticArtifact().replace(
-      /\}\n$/,
-      ',"checksum": "sha256:x"}\n'.slice(1),
-    ));
-    // checksum verification fails for the placeholder; assert the error
+    const tampered = JSON.parse(syntheticArtifact());
+    tampered.checksum = "sha256:x"; // placeholder: verification must fail
+    writeFileSync(path, JSON.stringify(tampered));
     assert.throws(() => PargRuntime.fromFile(path), /checksum/i);
   });
 

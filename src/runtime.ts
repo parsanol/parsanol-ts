@@ -4,6 +4,7 @@
 //! (PargArtifactJs) — no grammar code lives in this package; the baked
 //! artifact is the contract.
 
+import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -74,6 +75,13 @@ export class PargRuntime {
 
   readonly defaultEntry: string | null;
 
+  /** parsanol-ts#5 provenance: SHA-256 of the .parg source text and the
+   * compiler version. Null for artifacts compiled before these fields
+   * existed (unverifiable, not stale). */
+  readonly sourceHash: string | null;
+  readonly compilerVersion: string | null;
+  readonly source: string | null;
+
   readonly envelope: Record<string, unknown>;
 
   constructor(artifactJson: string, entry?: string) {
@@ -97,7 +105,24 @@ export class PargRuntime {
     // The compiler bakes default_entry: JSON key order is not preserved
     // across engines, so the sorted entry list cannot rederive it.
     this.defaultEntry = (parsed["default_entry"] as string | undefined) ?? null;
+    this.sourceHash = (parsed["source_hash"] as string | undefined) ?? null;
+    this.compilerVersion = (parsed["compiler_version"] as string | undefined) ?? null;
+    this.source = (parsed["source"] as string | undefined) ?? null;
     this.entry = entry ?? this.defaultEntry ?? this.artifact.entryNames()[0];
+  }
+
+  /** The wire-format family ("parsanol-tree/v2"): a shape bump requires a
+   * new engine family; same-shape artifacts parse identically forever. */
+  get shape(): string | null {
+    return (this.envelope["shape"] as string | undefined) ?? null;
+  }
+
+  /** True when this artifact was compiled from `source` (the current .parg
+   * revision); null when the artifact carries no source hash. */
+  compiledFrom(source: string): boolean | null {
+    if (this.sourceHash === null) return null;
+    const hash = `sha256:${createHash("sha256").update(source).digest("hex")}`;
+    return this.sourceHash === hash;
   }
 
   /** Load an artifact JSON file and verify its checksum. */
