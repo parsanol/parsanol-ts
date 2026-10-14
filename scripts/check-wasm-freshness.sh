@@ -22,10 +22,20 @@ if [ ! -d "$RS_DIR/.git" ]; then
 fi
 rs_head="$(git -C "$RS_DIR" rev-parse HEAD)"
 
-if [ "$built_from" != "$rs_head" ]; then
-  echo "wasm-freshness: FAIL — vendored wasm built from ${built_from:0:12} but parsanol-rs is at ${rs_head:0:12}." >&2
-  echo "  Rebuild and re-vendor: see the command in $VENDOR/BUILT_FROM," >&2
-  echo "  then update the marker to the new HEAD." >&2
-  exit 1
+# Fresh = built from a commit that shares history with the rs checkout
+# (either is an ancestor of the other). An exact-HEAD compare failed
+# on every parsanol-rs merge commit even when the vendored wasm
+# contained everything current - the corpus PR own merge commit tripped
+# it in CI.
+if git -C "$RS_DIR" merge-base --is-ancestor "$built_from" "$rs_head"; then
+  echo "wasm-freshness: ok (built from ${built_from:0:12}, contained in ${rs_head:0:12})"
+  exit 0
 fi
-echo "wasm-freshness: ok (built from ${rs_head:0:12})"
+if git -C "$RS_DIR" merge-base --is-ancestor "$rs_head" "$built_from"; then
+  echo "wasm-freshness: ok (built from ${built_from:0:12}, ahead of ${rs_head:0:12})"
+  exit 0
+fi
+echo "wasm-freshness: FAIL — vendored wasm built from ${built_from:0:12} which has diverged from parsanol-rs ${rs_head:0:12}." >&2
+echo "  Rebuild and re-vendor: see the command in $VENDOR/BUILT_FROM," >&2
+echo "  then update the marker to the new HEAD." >&2
+exit 1
