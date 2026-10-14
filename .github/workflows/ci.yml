@@ -12,6 +12,12 @@ jobs:
         with:
           repository: pubid/pubid-grammar
           path: pubid-grammar
+      # The conformance corpus and the wasm freshness reference both
+      # track parsanol-rs (corpus/conformance + BUILT_FROM).
+      - uses: actions/checkout@v7
+        with:
+          repository: parsanol/parsanol-rs
+          path: parsanol-rs
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -19,8 +25,9 @@ jobs:
       - name: Wasm freshness
         run: bash scripts/check-wasm-freshness.sh
         env:
-          PARSANOL_RS: ${{ github.workspace }}/..
+          PARSANOL_RS: ${{ github.workspace }}/parsanol-rs
       - name: Build + test (artifact-gated against the baked corpus)
         run: npm test
         env:
           PARG_ARTIFACT_DIR: ${{ github.workspace }}/pubid-grammar/artifacts
+          PARG_CONFORMANCE_DIR: ${{ github.workspace }}/parsanol-rs/corpus/conformance
