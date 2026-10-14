@@ -32,7 +32,7 @@ function syntheticArtifact(): string {
     compiler_version: "test",
   };
   envelope.source_hash =
-    `sha256:${createHash("sha256").update(envelope.source).digest("hex")}`;
+    createHash("sha256").update(envelope.source).digest("hex");
   return withChecksum(envelope);
 }
 
@@ -81,7 +81,7 @@ describe("PargRuntime", () => {
   it("exposes provenance and answers compiledFrom (parsanol-ts#5)", () => {
     const rt = new PargRuntime(syntheticArtifact());
     assert.equal(rt.compilerVersion, "test");
-    assert.match(rt.sourceHash as string, /^sha256:[0-9a-f]{64}$/);
+    assert.match(rt.sourceHash as string, /^[0-9a-f]{64}$/);
     const source = 'grammar Synthetic version "0.0.0" {\n  identifier = "ab"\n  entry identifier: identifier\n}\n';
     assert.equal(rt.compiledFrom(source), true);
     assert.equal(rt.compiledFrom(`${source}\n`), false);
@@ -91,7 +91,7 @@ describe("PargRuntime", () => {
     delete legacy.source_hash;
     const rt2 = new PargRuntime(withChecksum(legacy));
     assert.equal(rt2.sourceHash, null);
-    assert.equal(rt2.compiledFrom(source), null);
+    assert.equal(rt2.compiledFrom(source), false);
   });
 
   it("exposes entries and the default entry", () => {
