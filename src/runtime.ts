@@ -118,11 +118,11 @@ export class PargRuntime {
   }
 
   /** True when this artifact was compiled from `source` (the current .parg
-   * revision); null when the artifact carries no source hash. */
-  compiledFrom(source: string): boolean | null {
-    if (this.sourceHash === null) return null;
-    const hash = `sha256:${createHash("sha256").update(source).digest("hex")}`;
-    return this.sourceHash === hash;
+   * revision). The compiler bakes a bare hex digest; artifacts without the
+   * field answer false — unverifiable rather than fresh. */
+  compiledFrom(source: string): boolean {
+    if (this.sourceHash === null) return false;
+    return this.sourceHash === createHash("sha256").update(source).digest("hex");
   }
 
   /** Load an artifact JSON file and verify its checksum. */
