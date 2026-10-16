@@ -23,6 +23,25 @@ const text = rt.renderString("ISO 5537:2025");    // F6 render
 
 Construction throws unless the artifact's embedded checksum verifies.
 
+## Provenance
+
+Every artifact embeds its provenance; the runtime exposes and verifies
+it (parsanol-ts#5):
+
+```ts
+rt.sourceHash;                    // SHA-256 of the .parg source (bare hex)
+rt.compilerVersion;               // the compiler that produced the artifact
+rt.source;                        // the embedded .parg source text
+rt.shape;                         // wire-format family, "parsanol-tree/v2"
+rt.compiledFrom(currentSource);   // false = the artifact is stale
+```
+
+A stale artifact (`compiledFrom` false against the current grammar text)
+means the source moved since compilation — recompile or fall back.
+`shape` moves independently of `compilerVersion`: the same
+`parsanol-tree/v2` artifact parses identically on every engine, forever;
+a shape bump means a new engine family.
+
 ## Vendored engine freshness
 
 `vendor/parsanol-wasm/BUILT_FROM` records the parsanol-rs commit the
