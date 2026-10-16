@@ -39,7 +39,7 @@ class PargArtifactJs {
      */
     entryNames() {
         const ret = wasm.pargartifactjs_entryNames(this.__wbg_ptr);
-        var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
+        var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]);
         wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
         return v1;
     }
@@ -54,7 +54,7 @@ class PargArtifactJs {
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
-        this.__wbg_ptr = ret[0] >>> 0;
+        this.__wbg_ptr = ret[0];
         PargArtifactJsFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
@@ -106,22 +106,22 @@ class PargArtifactJs {
         return takeFromExternrefTable0(ret[0]);
     }
     /**
-     * The binding-requirements schema as JSON text.
+     * The binding-requirements schema as TypeScript source.
      * @returns {string}
      */
-    schema() {
-        const ret = wasm.pargartifactjs_schema(this.__wbg_ptr);
+    schemaTypescript() {
+        const ret = wasm.pargartifactjs_schemaTypescript(this.__wbg_ptr);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
         return takeFromExternrefTable0(ret[0]);
     }
     /**
-     * The binding-requirements schema as TypeScript source.
+     * The binding-requirements schema as JSON text.
      * @returns {string}
      */
-    schemaTypescript() {
-        const ret = wasm.pargartifactjs_schemaTypescript(this.__wbg_ptr);
+    schema() {
+        const ret = wasm.pargartifactjs_schema(this.__wbg_ptr);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
@@ -138,7 +138,6 @@ exports.PargArtifactJs = PargArtifactJs;
  */
 class WasmParser {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(WasmParser.prototype);
         obj.__wbg_ptr = ptr;
         WasmParserFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -198,7 +197,7 @@ class WasmParser {
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
-        this.__wbg_ptr = ret[0] >>> 0;
+        this.__wbg_ptr = ret[0];
         WasmParserFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
@@ -295,11 +294,10 @@ function init() {
     wasm.init();
 }
 exports.init = init;
-
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
-        __wbg___wbindgen_string_get_395e606bd0ee4427: function(arg0, arg1) {
+        __wbg___wbindgen_string_get_0380ccaa2f57f0d9: function(arg0, arg1) {
             const obj = arg1;
             const ret = typeof(obj) === 'string' ? obj : undefined;
             var ptr1 = isLikeNone(ret) ? 0 : passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -307,10 +305,10 @@ function __wbg_get_imports() {
             getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
             getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
         },
-        __wbg___wbindgen_throw_6ddd609b62940d55: function(arg0, arg1) {
+        __wbg___wbindgen_throw_41e9ee4f547fc59a: function(arg0, arg1) {
             throw new Error(getStringFromWasm0(arg0, arg1));
         },
-        __wbg_error_a6fa202b58aa1cd3: function(arg0, arg1) {
+        __wbg_error_757e9472f8410341: function(arg0, arg1) {
             let deferred0_0;
             let deferred0_1;
             try {
@@ -321,26 +319,26 @@ function __wbg_get_imports() {
                 wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
             }
         },
-        __wbg_getRandomValues_3f44b700395062e5: function() { return handleError(function (arg0, arg1) {
+        __wbg_getRandomValues_a608c4436c19407a: function() { return handleError(function (arg0, arg1) {
             globalThis.crypto.getRandomValues(getArrayU8FromWasm0(arg0, arg1));
         }, arguments); },
         __wbg_new_227d7c05414eb861: function() {
             const ret = new Error();
             return ret;
         },
-        __wbg_new_a70fbab9066b301f: function() {
-            const ret = new Array();
-            return ret;
-        },
-        __wbg_new_ab79df5bd7c26067: function() {
+        __wbg_new_617a8cdb8bb1130e: function() {
             const ret = new Object();
             return ret;
         },
-        __wbg_push_e87b0e732085a946: function(arg0, arg1) {
+        __wbg_new_ee2291f50781bf1d: function() {
+            const ret = new Array();
+            return ret;
+        },
+        __wbg_push_2baf45db356cf468: function(arg0, arg1) {
             const ret = arg0.push(arg1);
             return ret;
         },
-        __wbg_set_7eaa4f96924fd6b3: function() { return handleError(function (arg0, arg1, arg2) {
+        __wbg_set_145a351398b48c65: function() { return handleError(function (arg0, arg1, arg2) {
             const ret = Reflect.set(arg0, arg1, arg2);
             return ret;
         }, arguments); },
@@ -351,16 +349,16 @@ function __wbg_get_imports() {
             getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
             getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
         },
-        __wbg_stringify_5ae93966a84901ac: function() { return handleError(function (arg0) {
+        __wbg_stringify_52ff602c1cc4fbb6: function() { return handleError(function (arg0) {
             const ret = JSON.stringify(arg0);
             return ret;
         }, arguments); },
-        __wbindgen_cast_0000000000000001: function(arg0) {
+        __wbindgen_generic_0000000000000001: function(arg0) {
             // Cast intrinsic for `F64 -> Externref`.
             const ret = arg0;
             return ret;
         },
-        __wbindgen_cast_0000000000000002: function(arg0, arg1) {
+        __wbindgen_generic_0000000000000002: function(arg0, arg1) {
             // Cast intrinsic for `Ref(String) -> Externref`.
             const ret = getStringFromWasm0(arg0, arg1);
             return ret;
@@ -383,10 +381,10 @@ function __wbg_get_imports() {
 
 const PargArtifactJsFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_pargartifactjs_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_pargartifactjs_free(ptr, 1));
 const WasmParserFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_wasmparser_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_wasmparser_free(ptr, 1));
 
 function addToExternrefTable0(obj) {
     const idx = wasm.__externref_table_alloc();
@@ -432,8 +430,7 @@ function getDataViewMemory0() {
 }
 
 function getStringFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return decodeText(ptr, len);
+    return decodeText(ptr >>> 0, len);
 }
 
 let cachedUint8ArrayMemory0 = null;
@@ -524,5 +521,6 @@ let WASM_VECTOR_LEN = 0;
 const wasmPath = `${__dirname}/parsanol_bg.wasm`;
 const wasmBytes = require('fs').readFileSync(wasmPath);
 const wasmModule = new WebAssembly.Module(wasmBytes);
-let wasm = new WebAssembly.Instance(wasmModule, __wbg_get_imports()).exports;
+let wasmInstance = new WebAssembly.Instance(wasmModule, __wbg_get_imports());
+let wasm = wasmInstance.exports;
 wasm.__wbindgen_start();
