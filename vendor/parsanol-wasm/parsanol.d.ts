@@ -36,13 +36,13 @@ export class PargArtifactJs {
      */
     runTests(): string;
     /**
-     * The binding-requirements schema as JSON text.
-     */
-    schema(): string;
-    /**
      * The binding-requirements schema as TypeScript source.
      */
     schemaTypescript(): string;
+    /**
+     * The binding-requirements schema as JSON text.
+     */
+    schema(): string;
 }
 
 /**
