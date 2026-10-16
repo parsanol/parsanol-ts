@@ -13,11 +13,15 @@ jobs:
           repository: pubid/pubid-grammar
           path: pubid-grammar
       # The conformance corpus and the wasm freshness reference both
-      # track parsanol-rs (corpus/conformance + BUILT_FROM).
+      # track parsanol-rs (corpus/conformance + BUILT_FROM). The
+      # freshness gate resolves BUILT_FROM as an ancestor of the rs
+      # head, so the checkout needs history — depth 1 cannot even
+      # name the commit and the gate would false-fail as diverged.
       - uses: actions/checkout@v7
         with:
           repository: parsanol/parsanol-rs
           path: parsanol-rs
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
