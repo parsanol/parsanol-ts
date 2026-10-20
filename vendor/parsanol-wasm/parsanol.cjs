@@ -76,6 +76,25 @@ class PargArtifactJs {
         return takeFromExternrefTable0(ret[0]);
     }
     /**
+     * Best-effort recovery (TODO.sota/1): success returns
+     * `{"ok": true, "shape": ...}`; failure returns
+     * `{"ok": false, "captures": ..., "error": ..., "consumed_upto"}`.
+     * @param {string} entry
+     * @param {string} input
+     * @returns {string}
+     */
+    parseShapeRecovering(entry, input) {
+        const ptr0 = passStringToWasm0(entry, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(input, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        const ret = wasm.pargartifactjs_parseShapeRecovering(this.__wbg_ptr, ptr0, len0, ptr1, len1);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
      * Parse an entry with the native engine; returns the parsanol-shape
      * tree as JSON text.
      * @param {string} entry
