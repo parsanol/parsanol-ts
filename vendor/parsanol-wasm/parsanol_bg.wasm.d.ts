@@ -9,6 +9,7 @@ export const pargartifactjs_entryNames: (a: number) => [number, number];
 export const pargartifactjs_new: (a: number, b: number) => [number, number, number];
 export const pargartifactjs_parseAndBind: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
 export const pargartifactjs_parseShape: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
+export const pargartifactjs_parseShapeRecovering: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
 export const pargartifactjs_runTests: (a: number) => [number, number, number];
 export const pargartifactjs_schema: (a: number) => [number, number, number];
 export const parsanol_c_last_error: () => number;

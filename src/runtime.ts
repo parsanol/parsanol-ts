@@ -149,6 +149,16 @@ export class PargRuntime {
     return JSON.parse(this.artifact.parseShape(this.entry, input));
   }
 
+  /**
+   * Best-effort recovery (TODO.sota/1): never throws. Success returns
+   * `{ ok: true, shape }`; failure returns
+   * `{ ok: false, captures, error, consumed_upto }` — the captures
+   * observed before the failure plus the failure wire.
+   */
+  parseShapeRecovering(input: string): RecoveryEnvelope {
+    return JSON.parse(this.artifact.parseShapeRecovering(this.entry, input));
+  }
+
   /** Apply the entry's bindings to a parsanol-shape tree. */
   applyBindings(shape: unknown): Record<string, unknown> {
     return JSON.parse(this.artifact.applyBindings(this.entry, JSON.stringify(shape)));
@@ -252,6 +262,23 @@ export function renderSegments(
 }
 
 /** A schema-materialized identifier: typed fields plus provenance. */
+export interface RecoveryError {
+  offset: number;
+  message?: string;
+  expected?: string[];
+  line?: number;
+  column?: number;
+}
+
+/** The parseShapeRecovering envelope (TODO.sota/1). */
+export interface RecoveryEnvelope {
+  ok: boolean;
+  shape?: unknown;
+  captures?: Record<string, unknown[]>;
+  error?: RecoveryError;
+  consumed_upto?: number;
+}
+
 export interface Materialized {
   entry: string;
   attributes: Record<string, unknown>;
