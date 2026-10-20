@@ -42,6 +42,28 @@ means the source moved since compilation — recompile or fall back.
 `parsanol-tree/v2` artifact parses identically on every engine, forever;
 a shape bump means a new engine family.
 
+## Recovery (best-effort partial parses)
+
+`parseShapeRecovering` never throws: on success it returns
+`{ ok: true, shape }`; on failure it returns the "what did match"
+answer alongside the failure —
+
+```ts
+const r = rt.parseShapeRecovering("ab 4");
+// { ok: false,
+//   error: { offset: 4, expected: [...] },
+//   captures: { text: [{ value: "ab", offset: 0, ... }] },
+//   consumed_upto: 4 }
+```
+
+- `captures` carries every capture observed before the failure
+  (best-effort: it may include captures from branches that later
+  failed — same semantics as the rs recovery journal).
+- `consumed_upto` is the furthest position any successful match ended.
+
+The strict `parseShape` contract is unchanged; recovery is the
+editors-and-linters answer.
+
 ## Vendored engine freshness
 
 `vendor/parsanol-wasm/BUILT_FROM` records the parsanol-rs commit the
