@@ -26,29 +26,29 @@ export class PargArtifactJs {
      */
     parseAndBind(entry: string, input: string): string;
     /**
+     * Parse an entry with the native engine; returns the parsanol-shape
+     * tree as JSON text.
+     */
+    parseShape(entry: string, input: string): string;
+    /**
      * Best-effort recovery (TODO.sota/1): success returns
      * `{"ok": true, "shape": ...}`; failure returns
      * `{"ok": false, "captures": ..., "error": ..., "consumed_upto"}`.
      */
     parseShapeRecovering(entry: string, input: string): string;
     /**
-     * Parse an entry with the native engine; returns the parsanol-shape
-     * tree as JSON text.
-     */
-    parseShape(entry: string, input: string): string;
-    /**
      * Run the artifact's embedded tests; returns the failure list as
      * JSON (empty array means green).
      */
     runTests(): string;
     /**
-     * The binding-requirements schema as TypeScript source.
-     */
-    schemaTypescript(): string;
-    /**
      * The binding-requirements schema as JSON text.
      */
     schema(): string;
+    /**
+     * The binding-requirements schema as TypeScript source.
+     */
+    schemaTypescript(): string;
 }
 
 /**
