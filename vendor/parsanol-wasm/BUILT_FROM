@@ -1,2 +1,2 @@
-bf1fb62b747b533e929410a9f08e514679e80010
+ff02baff5864828da72dae182d3b351d97f50007
 built with: wasm-pack build --target=nodejs --features wasm (from parsanol-rs/parsanol)
