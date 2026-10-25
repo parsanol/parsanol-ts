@@ -22,14 +22,12 @@ export class PargArtifactJs {
      */
     constructor(artifact_json: string);
     /**
-     * Parse and bind in one step.
+     * Parse and bind in one step: the bound attribute hash as JSON.
+     *
+     * Returns `{}` when the entry declares no `bindings` block — the
+     * parse succeeded, there was simply nothing to bind.
      */
     parseAndBind(entry: string, input: string): string;
-    /**
-     * Parse an entry with the native engine; returns the parsanol-shape
-     * tree as JSON text.
-     */
-    parseShape(entry: string, input: string): string;
     /**
      * Best-effort recovery (TODO.sota/1): success returns
      * `{"ok": true, "shape": ...}`; failure returns
@@ -37,18 +35,23 @@ export class PargArtifactJs {
      */
     parseShapeRecovering(entry: string, input: string): string;
     /**
+     * Parse an entry with the native engine; returns the parsanol-shape
+     * tree as JSON text.
+     */
+    parseShape(entry: string, input: string): string;
+    /**
      * Run the artifact's embedded tests; returns the failure list as
      * JSON (empty array means green).
      */
     runTests(): string;
     /**
-     * The binding-requirements schema as JSON text.
-     */
-    schema(): string;
-    /**
      * The binding-requirements schema as TypeScript source.
      */
     schemaTypescript(): string;
+    /**
+     * The binding-requirements schema as JSON text.
+     */
+    schema(): string;
 }
 
 /**
@@ -125,6 +128,13 @@ export class WasmParser {
 }
 
 /**
- * Initialize function for WASM
+ * Install the panic hook (better panic messages in the console).
+ *
+ * The glue's real bootstrap is the DEFAULT export —
+ * `__wbg_init(module_or_path?)` / `initSync` — which calls this on
+ * its way up; calling it directly is only needed outside the
+ * bootstrap. It is deliberately NOT named `init`: that name in the
+ * generated d.ts typed the bootstrap as `() => void` and hid the
+ * real signatures (rs#308).
  */
-export function init(): void;
+export function setPanicHook(): void;
