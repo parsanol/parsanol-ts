@@ -2,9 +2,9 @@
 /* eslint-disable */
 
 /**
- * A verified PARG artifact exposed to JavaScript: checksum-verified load,
- * native parse, bindings application, embedded-suite runs and the
- * binding-requirements schema (PN 2/4).
+ * A verified PARG artifact exposed to JavaScript: checksum-verified
+ * load, native parse, bindings application, embedded-suite runs and
+ * the binding-requirements schema (PN 2/4).
  */
 export class PargArtifactJs {
     free(): void;
@@ -126,6 +126,13 @@ export class WasmParser {
      */
     parse_json(input: string): string;
 }
+
+/**
+ * Compile PARG source to a checksummed artifact — the playground's
+ * compiler-in-the-browser (site#19). Single-file grammars: `use`
+ * imports have no filesystem here and reject with the merge error.
+ */
+export function compileSource(source: string): string;
 
 /**
  * Install the panic hook (better panic messages in the console).

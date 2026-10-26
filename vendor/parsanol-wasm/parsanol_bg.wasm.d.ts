@@ -3,6 +3,7 @@
 export const memory: WebAssembly.Memory;
 export const __wbg_pargartifactjs_free: (a: number, b: number) => void;
 export const __wbg_wasmparser_free: (a: number, b: number) => void;
+export const compileSource: (a: number, b: number) => [number, number, number, number];
 export const pargartifactjs_applyBindings: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
 export const pargartifactjs_entryNames: (a: number) => [number, number];
 export const pargartifactjs_new: (a: number, b: number) => [number, number, number];

@@ -1,9 +1,9 @@
 /* @ts-self-types="./parsanol.d.ts" */
 
 /**
- * A verified PARG artifact exposed to JavaScript: checksum-verified load,
- * native parse, bindings application, embedded-suite runs and the
- * binding-requirements schema (PN 2/4).
+ * A verified PARG artifact exposed to JavaScript: checksum-verified
+ * load, native parse, bindings application, embedded-suite runs and
+ * the binding-requirements schema (PN 2/4).
  */
 class PargArtifactJs {
     __destroy_into_raw() {
@@ -308,6 +308,35 @@ class WasmParser {
 }
 if (Symbol.dispose) WasmParser.prototype[Symbol.dispose] = WasmParser.prototype.free;
 exports.WasmParser = WasmParser;
+
+/**
+ * Compile PARG source to a checksummed artifact — the playground's
+ * compiler-in-the-browser (site#19). Single-file grammars: `use`
+ * imports have no filesystem here and reject with the merge error.
+ * @param {string} source
+ * @returns {string}
+ */
+function compileSource(source) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.compileSource(ptr0, len0);
+        var ptr2 = ret[0];
+        var len2 = ret[1];
+        if (ret[3]) {
+            ptr2 = 0; len2 = 0;
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        deferred3_0 = ptr2;
+        deferred3_1 = len2;
+        return getStringFromWasm0(ptr2, len2);
+    } finally {
+        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+    }
+}
+exports.compileSource = compileSource;
 
 /**
  * Install the panic hook (better panic messages in the console).
