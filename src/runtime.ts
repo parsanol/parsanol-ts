@@ -15,6 +15,19 @@ type PargArtifactJs = any;
 
 interface WasmModule {
   PargArtifactJs: new (artifactJson: string) => PargArtifactJs;
+  compileSource: (source: string) => string;
+}
+
+/**
+ * Compile PARG source to a checksummed artifact in-process — the
+ * playground's compiler-in-the-browser seam (site#19). Single-file
+ * grammars: `use` imports have no filesystem here and reject with the
+ * merge error. The compiler stamp is the wasm build's crate version.
+ *
+ * @throws when the source does not parse or the grammar is invalid.
+ */
+export function compileSource(source: string): Record<string, unknown> {
+  return JSON.parse(wasm().compileSource(source)) as Record<string, unknown>;
 }
 
 /** Walk up from this module to the package root (which holds package.json). */
