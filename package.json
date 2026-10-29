@@ -1,6 +1,6 @@
 {
   "name": "parsanol",
-  "version": "0.10.20",
+  "version": "0.10.23",
   "description": "PARG artifact runtime for TypeScript — checksum-verified artifact load, wasm parse, bindings, schema-driven materialization",
   "type": "module",
   "main": "dist/runtime.js",
