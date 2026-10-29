@@ -8,6 +8,13 @@ The engine is the vendored parsanol wasm build (`vendor/parsanol-wasm/`,
 nodejs target) — **no grammar code lives here**; the baked artifact is
 the contract.
 
+## Releases
+
+parsanol is one product on three language runtimes: **ruby** (rubygems),
+**python** (PyPI, `parsanol`), and **typescript** (npm, `parsanol` —
+this package). Every release publishes **all three together**; a release
+that ships one runtime and not the others is incomplete.
+
 ## Usage
 
 ```ts
