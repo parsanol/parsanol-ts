@@ -10,10 +10,11 @@ the contract.
 
 ## Releases
 
-parsanol is one product on three language runtimes: **ruby** (rubygems),
-**python** (PyPI, `parsanol`), and **typescript** (npm, `parsanol` —
-this package). Every release publishes **all three together**; a release
-that ships one runtime and not the others is incomplete.
+parsanol is one product on **four runtimes**: **rs** (crates.io +
+`@parsanol/wasm` + release binaries), **ruby** (rubygems), **python**
+(PyPI, `parsanol`), and **typescript** (npm, `parsanol` — this package).
+**Every engine update releases all four together**; a release that ships
+some runtimes and not the rest is incomplete.
 
 ## Usage
 
