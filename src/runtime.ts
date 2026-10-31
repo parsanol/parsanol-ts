@@ -95,6 +95,12 @@ export class PargRuntime {
   readonly compilerVersion: string | null;
   readonly source: string | null;
 
+  /** ruby#377 semantics fingerprint: stable across producer metadata
+   * (compiler_version, unicode_tables), so gates can tell "re-baked by
+   * a newer compiler" from "the grammar changed". Null for artifacts
+   * baked before the field existed (parsanol >= 1.3.117 / rs 0.19.14). */
+  readonly semanticsHash: string | null;
+
   readonly envelope: Record<string, unknown>;
 
   constructor(artifactJson: string, entry?: string) {
@@ -121,6 +127,7 @@ export class PargRuntime {
     this.sourceHash = (parsed["source_hash"] as string | undefined) ?? null;
     this.compilerVersion = (parsed["compiler_version"] as string | undefined) ?? null;
     this.source = (parsed["source"] as string | undefined) ?? null;
+    this.semanticsHash = (parsed["semantics_hash"] as string | undefined) ?? null;
     this.entry = entry ?? this.defaultEntry ?? this.artifact.entryNames()[0];
   }
 

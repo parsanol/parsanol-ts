@@ -30,6 +30,7 @@ function syntheticArtifact(): string {
     source: 'grammar Synthetic version "0.0.0" {\n  identifier = "ab"\n  entry identifier: identifier\n}\n',
     source_hash: "",
     compiler_version: "test",
+    semantics_hash: `sha256:${"a".repeat(64)}`,
   };
   envelope.source_hash =
     createHash("sha256").update(envelope.source).digest("hex");
@@ -82,6 +83,8 @@ describe("PargRuntime", () => {
     const rt = new PargRuntime(syntheticArtifact());
     assert.equal(rt.compilerVersion, "test");
     assert.match(rt.sourceHash as string, /^[0-9a-f]{64}$/);
+    // ruby#377: the semantics fingerprint rides the envelope, nil-safe
+    assert.equal(rt.semanticsHash, `sha256:${"a".repeat(64)}`);
     const source = 'grammar Synthetic version "0.0.0" {\n  identifier = "ab"\n  entry identifier: identifier\n}\n';
     assert.equal(rt.compiledFrom(source), true);
     assert.equal(rt.compiledFrom(`${source}\n`), false);
@@ -92,6 +95,11 @@ describe("PargRuntime", () => {
     const rt2 = new PargRuntime(withChecksum(legacy));
     assert.equal(rt2.sourceHash, null);
     assert.equal(rt2.compiledFrom(source), false);
+    // legacy artifact without a semantics hash: pre-1.3.117 bake
+    const old = JSON.parse(syntheticArtifact());
+    delete old.semantics_hash;
+    const rt3 = new PargRuntime(withChecksum(old));
+    assert.equal(rt3.semanticsHash, null);
   });
 
   it("exposes entries and the default entry", () => {
