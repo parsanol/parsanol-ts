@@ -13,6 +13,7 @@ export const pargartifactjs_parseShapeRecovering: (a: number, b: number, c: numb
 export const pargartifactjs_runTests: (a: number) => [number, number, number];
 export const pargartifactjs_schema: (a: number) => [number, number, number];
 export const pargartifactjs_schemaTypescript: (a: number) => [number, number, number];
+export const pargartifactjs_semanticsHash: (a: number) => any;
 export const parsanol_c_last_error: () => number;
 export const parsanol_c_parse: (a: bigint, b: number, c: number, d: number) => number;
 export const parsanol_c_parse_len: (a: bigint, b: number, c: number, d: number, e: number) => number;

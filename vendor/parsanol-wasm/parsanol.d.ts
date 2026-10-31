@@ -52,6 +52,13 @@ export class PargArtifactJs {
      * The binding-requirements schema as JSON text.
      */
     schema(): string;
+    /**
+     * The semantics hash (ruby#377): sha256 over the canonicalized
+     * envelope minus the producer set — byte-stable across re-bakes
+     * by a newer compiler when the grammar is unchanged. `undefined`
+     * on artifacts baked before the field existed.
+     */
+    semanticsHash(): string | undefined;
 }
 
 /**
