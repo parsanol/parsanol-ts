@@ -10,6 +10,14 @@ export class PargArtifactJs {
     free(): void;
     [Symbol.dispose](): void;
     /**
+     * Apply an entry's DECLARED bindings artifact (parsanol-ruby#432)
+     * to a parsanol-shape tree. The bindings artifact is verified
+     * (kind, checksum, `ts` target, binding version) and pair-checked
+     * against this parse artifact by grammar source hash before the
+     * shared apply core runs.
+     */
+    applyBindingsArtifact(bindings_json: string, entry: string, shape_json: string): string;
+    /**
      * Apply an entry's bindings to a parsanol-shape tree (JSON text).
      */
     applyBindings(entry: string, shape_json: string): string;

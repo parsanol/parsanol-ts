@@ -184,6 +184,21 @@ export class PargRuntime {
     return JSON.parse(this.artifact.applyBindings(this.entry, JSON.stringify(shape)));
   }
 
+  /** Apply an entry's DECLARED bindings artifact (parsanol-ruby#432) to
+   * a parsanol-shape tree. The engine verifies the artifact (kind,
+   * canonical-JSON checksum, `ts` target pin, binding version) and
+   * pair-checks it against this artifact by grammar source hash before
+   * the shared apply core runs — the JSON materialized is the JSON the
+   * checksum pinned. */
+  applyBindingsArtifact(
+    bindingsJson: string,
+    shape: unknown,
+  ): Record<string, unknown> {
+    return JSON.parse(
+      this.artifact.applyBindingsArtifact(bindingsJson, this.entry, JSON.stringify(shape)),
+    );
+  }
+
   /** Parse and bind in one step. */
   parseAndBind(input: string): Record<string, unknown> | null {
     try {
