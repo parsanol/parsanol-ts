@@ -17,6 +17,38 @@ class PargArtifactJs {
         wasm.__wbg_pargartifactjs_free(ptr, 0);
     }
     /**
+     * Apply an entry's DECLARED bindings artifact (parsanol-ruby#432)
+     * to a parsanol-shape tree. The bindings artifact is verified
+     * (kind, checksum, `ts` target, binding version) and pair-checked
+     * against this parse artifact by grammar source hash before the
+     * shared apply core runs.
+     * @param {string} bindings_json
+     * @param {string} entry
+     * @param {string} shape_json
+     * @returns {string}
+     */
+    applyBindingsArtifact(bindings_json, entry, shape_json) {
+        let ptr0, len0, ptr1, len1, ptr2, len2;
+        try {
+            ptr0 = passStringToWasm0(bindings_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len0 = WASM_VECTOR_LEN;
+            ptr1 = passStringToWasm0(entry, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len1 = WASM_VECTOR_LEN;
+            ptr2 = passStringToWasm0(shape_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len2 = WASM_VECTOR_LEN;
+        } catch (e) {
+            if (ptr2) { wasm.__wbindgen_free(ptr2, len2 * 1, 1); }
+            if (ptr1) { wasm.__wbindgen_free(ptr1, len1 * 1, 1); }
+            if (ptr0) { wasm.__wbindgen_free(ptr0, len0 * 1, 1); }
+            throw e;
+        }
+        const ret = wasm.pargartifactjs_applyBindingsArtifact(this.__wbg_ptr, ptr0, len0, ptr1, len1, ptr2, len2);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
      * Apply an entry's bindings to a parsanol-shape tree (JSON text).
      * @param {string} entry
      * @param {string} shape_json
