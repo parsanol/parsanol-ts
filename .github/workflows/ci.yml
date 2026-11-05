@@ -35,3 +35,33 @@ jobs:
         env:
           PARG_ARTIFACT_DIR: ${{ github.workspace }}/pubid-grammar/artifacts
           PARG_CONFORMANCE_DIR: ${{ github.workspace }}/parsanol-rs/corpus/conformance
+  # plurimath#540 requirement 3: replay a staged testsuite generation on
+  # the wasm engine and compare it with the Ruby-produced raw-tree rows.
+  # The artifact is pinned to the latexmath commit the generation's
+  # provenance names (latex generation 000003).
+  stage-replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: plurimath/latexmath
+          ref: 27e300a433742765486e3bead2fac19ee8fd55a0
+          path: latexmath
+          sparse-checkout: artifacts
+      - uses: actions/checkout@v7
+        with:
+          repository: plurimath/plurimath-testsuite
+          path: plurimath-testsuite
+          sparse-checkout: stages/latex/generations/000003
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install
+      - name: Replay latex generation 000003 (raw-tree rows)
+        run: npm run replay-stage -- latexmath/artifacts/latex.json plurimath-testsuite/stages/latex/generations/000003/payloads
+      - name: Stage replay test (artifact-gated)
+        run: node --test dist-test/test/stage-replay.test.js
+        env:
+          PARG_ARTIFACT_DIR: ${{ github.workspace }}/latexmath/artifacts
+          STAGE_PAYLOADS: ${{ github.workspace }}/plurimath-testsuite/stages/latex/generations/000003/payloads

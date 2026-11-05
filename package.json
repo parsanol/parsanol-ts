@@ -17,6 +17,7 @@
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && npx tsc -p tsconfig.test.json && node --test dist-test/test/*.test.js",
     "refresh-wasm": "bash scripts/refresh-wasm.sh",
+    "replay-stage": "npm run build && npx tsc -p tsconfig.test.json && node dist-test/scripts/replay-stage.js",
     "prepublishOnly": "npm run build",
     "bench": "node bench/bench.mjs"
   },
@@ -38,6 +39,7 @@
   "private": false,
   "devDependencies": {
     "@types/node": "^26.6.3",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "yaml": "^2.9.1"
   }
 }
