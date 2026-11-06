@@ -9,6 +9,7 @@ import {
   sortCanonical,
 } from "../src/stage-canonical.js";
 import { formatReport, replayStage } from "../scripts/replay-stage.js";
+import { umathPreprocess } from "../scripts/stage-languages.js";
 
 const ref = (offset: number, value: string) => ({ offset, length: Buffer.byteLength(value), line: 1, column: offset + 1, value });
 
@@ -63,16 +64,39 @@ describe("stage canonical form (latexmath stage_cases.rb Canonical.dump)", () =>
   });
 });
 
+describe("umath preprocessing port (Umath::Preprocessor)", () => {
+  it("encodes everything outside printable ASCII as hex entities", () => {
+    assert.equal(umathPreprocess("\u2061"), "&#x2061;");
+    assert.equal(umathPreprocess("a\u2061"), "a&#x2061;");
+    assert.equal(umathPreprocess("\u03b1\u2061"), "&#x3b1;&#x2061;");
+    assert.equal(umathPreprocess("\u{1d44e}"), "&#x1d44e;");
+  });
+
+  it("keeps & and \", splits the label off and strips spaces", () => {
+    assert.equal(umathPreprocess(" a&b\"c\" "), 'a&b"c"');
+    assert.equal(umathPreprocess("x#label"), "x");
+    assert.equal(umathPreprocess("#"), null);
+    assert.equal(umathPreprocess("\u270e(a#b)"), "&#x270e;(a#b)");
+  });
+
+  it("removes comments, halves double backslashes and expands \\u escapes", () => {
+    assert.equal(umathPreprocess("a\u2af7note\u2af8b"), "ab");
+    assert.equal(umathPreprocess("\\\\x"), "\\x");
+    assert.equal(umathPreprocess("\\u03b1"), "&#x03b1;");
+  });
+});
+
 describe("stage replay on the wasm engine", () => {
   it("replays a raw-tree generation with no differing rows when provided", () => {
-    // artifact-gated: PARG_ARTIFACT_DIR holds latex.json and
-    // STAGE_PAYLOADS is the generation's payloads directory.
+    // artifact-gated: PARG_ARTIFACT_DIR holds the artifact (STAGE_ARTIFACT,
+    // default latex.json), STAGE_PAYLOADS is the generation's payloads
+    // directory and STAGE_LANGUAGE the stage language (default latex).
     const dir = process.env.PARG_ARTIFACT_DIR;
     const payloads = process.env.STAGE_PAYLOADS;
     if (!dir || !payloads) return;
     const artifact = join(dir, process.env.STAGE_ARTIFACT ?? "latex.json");
     if (!existsSync(artifact)) return;
-    const report = replayStage({ artifact, payloads });
+    const report = replayStage({ artifact, payloads, language: process.env.STAGE_LANGUAGE ?? "latex" });
     assert.ok(report.rows.length > 0, "no raw-tree rows found");
     assert.equal(report.differ, 0, formatReport(report));
   });

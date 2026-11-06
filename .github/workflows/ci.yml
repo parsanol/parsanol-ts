@@ -35,33 +35,62 @@ jobs:
         env:
           PARG_ARTIFACT_DIR: ${{ github.workspace }}/pubid-grammar/artifacts
           PARG_CONFORMANCE_DIR: ${{ github.workspace }}/parsanol-rs/corpus/conformance
-  # plurimath#540 requirement 3: replay a staged testsuite generation on
-  # the wasm engine and compare it with the Ruby-produced raw-tree rows.
-  # The artifact is pinned to the latexmath commit the generation's
-  # provenance names (latex generation 000003).
+  # plurimath#540 requirement 3: replay each staged testsuite generation
+  # with raw-tree rows on the wasm engine and compare it with the
+  # Ruby-produced rows. Each stage gem's artifact is pinned to the commit
+  # its generation's provenance names for the raw-tree producer.
   stage-replay:
+    name: stage-replay (${{ matrix.language }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: latex
+            gem: plurimath/latexmath
+            ref: 27e300a433742765486e3bead2fac19ee8fd55a0
+            artifact: latex.json
+            generation: stages/latex/generations/000003
+          - language: asciimath
+            gem: plurimath/amath
+            ref: 8ec8ba05bc49196aa5825782a052f51a2db99c7a
+            artifact: asciimath.json
+            generation: stages/asciimath/generations/000003
+          - language: unicode
+            gem: plurimath/umath
+            ref: 0302568ef9446b1b099d15a56445ed7624816462
+            artifact: umath.json
+            generation: stages/unicode/generations/000004
     steps:
       - uses: actions/checkout@v7
+      # grammars/ holds umath's wrapper table (umath.wrappers.json).
       - uses: actions/checkout@v7
         with:
-          repository: plurimath/latexmath
-          ref: 27e300a433742765486e3bead2fac19ee8fd55a0
-          path: latexmath
-          sparse-checkout: artifacts
+          repository: ${{ matrix.gem }}
+          ref: ${{ matrix.ref }}
+          path: stage-gem
+          sparse-checkout: |
+            artifacts
+            grammars
       - uses: actions/checkout@v7
         with:
           repository: plurimath/plurimath-testsuite
           path: plurimath-testsuite
-          sparse-checkout: stages/latex/generations/000003
+          sparse-checkout: ${{ matrix.generation }}
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
       - run: npm install
-      - name: Replay latex generation 000003 (raw-tree rows)
-        run: npm run replay-stage -- latexmath/artifacts/latex.json plurimath-testsuite/stages/latex/generations/000003/payloads
+      - name: Replay ${{ matrix.generation }} (raw-tree rows)
+        run: >
+          npm run replay-stage --
+          stage-gem/artifacts/${{ matrix.artifact }}
+          plurimath-testsuite/${{ matrix.generation }}/payloads
+          --language ${{ matrix.language }}
       - name: Stage replay test (artifact-gated)
         run: node --test dist-test/test/stage-replay.test.js
         env:
-          PARG_ARTIFACT_DIR: ${{ github.workspace }}/latexmath/artifacts
-          STAGE_PAYLOADS: ${{ github.workspace }}/plurimath-testsuite/stages/latex/generations/000003/payloads
+          PARG_ARTIFACT_DIR: ${{ github.workspace }}/stage-gem/artifacts
+          STAGE_ARTIFACT: ${{ matrix.artifact }}
+          STAGE_LANGUAGE: ${{ matrix.language }}
+          STAGE_PAYLOADS: ${{ github.workspace }}/plurimath-testsuite/${{ matrix.generation }}/payloads
