@@ -76,7 +76,7 @@ export const LANGUAGES: Record<string, StageLanguage> = {
     bindings: false,
     decimalEntries: DECIMAL_ENTRIES,
     renames: {},
-    transform: (tree) => renest(tree),
+    transform: (tree, context) => renest(tree, context.source),
   },
   unicode: {
     name: "unicode",
@@ -146,7 +146,7 @@ const FINAL = "amath_end";
 const LEVELS: Record<string, string> = { amath_step: "expr", amath_lr: "left_right" };
 
 /** `tree` with every chain node rebuilt into the nested tree. */
-export function renest(tree: Node): Node {
+export function renest(tree: Node, source = ""): Node {
   const value = flattenShape(tree);
   const walk = (node: Node): Node => {
     if (Array.isArray(node)) return node.map(walk);
@@ -154,7 +154,7 @@ export function renest(tree: Node): Node {
     const rebuilt: Hash = {};
     for (const [k, v] of Object.entries(node)) rebuilt[k] = walk(v);
     if (CHAIN in node) {
-      const nested = renestChain(rebuilt[CHAIN] as Node[]);
+      const nested = renestChain(rebuilt[CHAIN] as Node[], source);
       if (!isHash(nested)) throw new Error("amath: a chain without a level");
       return Object.values(nested)[0];
     }
@@ -163,7 +163,7 @@ export function renest(tree: Node): Node {
   return walk(value);
 }
 
-function renestChain(items: Node[]): Node {
+function renestChain(items: Node[], source: string): Node {
   const last = items[items.length - 1];
   let tree: Node = isHash(last) && FINAL in last ? last[FINAL] : "";
   for (let i = items.length - 1; i >= 0; i--) {
@@ -171,23 +171,23 @@ function renestChain(items: Node[]): Node {
     if (!isHash(item)) continue;
     for (const [key, part] of Object.entries(item)) {
       const level = LEVELS[key];
-      if (level) tree = { [level]: fold(part, tree) };
+      if (level) tree = { [level]: fold(part, tree, source) };
     }
   }
   return tree;
 }
 
-function fold(left: Node, right: Node): Node {
+function fold(left: Node, right: Node, source: string): Node {
   if (left === null || left === undefined) return right === null || right === undefined ? "" : right;
   if (right === null || right === undefined) return left;
-  return renesterMerge(left, right);
+  return renesterMerge(left, right, source);
 }
 
 // Renester.merge: Parsanol's merge_fold without the duplicate-key warning.
-function renesterMerge(left: Node, right: Node): Node {
+function renesterMerge(left: Node, right: Node, source: string): Node {
   const l = kind(left);
   const r = kind(right);
-  if (l === r) return plus(left, right, l);
+  if (l === r) return plus(left, right, l, source);
   const lText = l === "string" || l === "slice";
   const rText = r === "string" || r === "slice";
   if (lText || rText) {
@@ -201,7 +201,7 @@ function renesterMerge(left: Node, right: Node): Node {
 }
 
 // `left + right` (or Hash#merge) for two values of the same Ruby class.
-function plus(left: Node, right: Node, k: Kind, source = ""): Node {
+function plus(left: Node, right: Node, k: Kind, source: string): Node {
   switch (k) {
     case "hash":
       return { ...(left as Hash), ...(right as Hash) };
@@ -273,15 +273,12 @@ function part(wrapper: string, value: Node): Node {
   }
 }
 
+// CanFlatten#foldl: "" for no element, else a left fold (nil elements
+// included, as Ruby passes them to the block).
 function foldl(list: Node[], merge: (l: Node, r: Node) => Node): Node {
-  let i = 0;
-  while (i < list.length && (list[i] === null || list[i] === undefined)) i++;
-  if (i >= list.length) return "";
-  let result = list[i++];
-  for (; i < list.length; i++) {
-    const e = list[i];
-    if (e !== null && e !== undefined) result = merge(result, e);
-  }
+  if (list.length === 0) return "";
+  let result = list[0];
+  for (let i = 1; i < list.length; i++) result = merge(result, list[i]);
   return result;
 }
 
@@ -303,16 +300,14 @@ function flattenRepetition(list: Node[], named: boolean, source: string): Node {
   if (list.some(isHash)) return list.filter(isHash);
   if (list.some(Array.isArray)) return (list.filter(Array.isArray) as Node[][]).flat(1);
   if (named && list.length === 0) return [];
-  // join_string_list
-  let first: Ref | null = null;
-  let content: string | null = null;
-  for (const e of list) {
-    if (e === null || e === undefined) continue;
-    if (!first && isRef(e)) first = e;
-    content = (content ?? "") + text(e, source);
-  }
-  if (content === null) return "";
-  return first ? slice(first.offset, content) : content;
+  // foldl(list.compact) { |s, e| s + e }: String#+ gives a String (a Slice
+  // converts with to_str) and Slice#+ a Slice at its own offset, so the
+  // first element decides the result's class.
+  const present = list.filter((e) => e !== null && e !== undefined);
+  if (present.length === 0) return "";
+  const content = present.map((e) => text(e, source)).join("");
+  const first = present[0];
+  return isRef(first) ? slice(first.offset, content) : content;
 }
 
 // ---------------------------------------------------------------------------
