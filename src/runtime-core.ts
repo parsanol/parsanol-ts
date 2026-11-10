@@ -9,6 +9,33 @@ export interface WasmModule {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PargArtifactJs = any;
 
+/** A native rule-recursion resource guard, distinct from syntax refusal. */
+export class RecursionLimitExceeded extends Error {
+  readonly category = "recursion_limit";
+  constructor(readonly depth: number, readonly maxDepth: number, message?: string) {
+    super(message ?? `Recursion limit exceeded: depth ${depth}, limit ${maxDepth}`);
+    this.name = "RecursionLimitExceeded";
+  }
+}
+/** WASM VM-call budget, separate from the rule-reference recursion guard. */
+export class CallDepthLimitExceeded extends Error {
+  readonly category = "call_depth_limit";
+  constructor(readonly depth: number, readonly maxDepth: number, message?: string) {
+    super(message ?? `VM call depth exceeded: depth ${depth}, limit ${maxDepth}`);
+    this.name = "CallDepthLimitExceeded";
+  }
+}
+function nativeResource(value: unknown): RecursionLimitExceeded | CallDepthLimitExceeded | null {
+  if (value === null || typeof value !== "object") return null;
+  const wire = value as Record<string, unknown>;
+  if (typeof wire["depth"] !== "number" || typeof wire["max_depth"] !== "number") return null;
+  const message = typeof wire["message"] === "string" ? wire["message"] : undefined;
+  if (wire["category"] === "recursion_limit") return new RecursionLimitExceeded(wire["depth"], wire["max_depth"], message);
+  if (wire["category"] === "call_depth_limit") return new CallDepthLimitExceeded(wire["depth"], wire["max_depth"], message);
+  return null;
+}
+function rethrowNative(error: unknown): never { throw nativeResource(error) ?? error; }
+
 /** A field requirement from the binding-requirements schema. */
 export interface FieldRequirement {
   type: string;
@@ -88,7 +115,8 @@ export class PargRuntimeCore {
 
   /** Parse with the native wasm engine; returns the parsanol-shape tree. */
   parseShape(input: string): unknown {
-    return JSON.parse(this.artifact.parseShape(this.entry, input));
+    try { return JSON.parse(this.artifact.parseShape(this.entry, input)); }
+    catch (error) { return rethrowNative(error); }
   }
 
   /** Explicit historical memo/causal-diagnostic policy; old APIs remain strict.
@@ -97,7 +125,12 @@ export class PargRuntimeCore {
     if (typeof this.artifact.parseShapeWithCompatibility !== "function") {
       throw new Error("native engine does not expose explicit parsing compatibility");
     }
-    return JSON.parse(this.artifact.parseShapeWithCompatibility(this.entry, input, compatibility));
+    try {
+      const result = JSON.parse(this.artifact.parseShapeWithCompatibility(this.entry, input, compatibility));
+      const resource = nativeResource(result?.error);
+      if (resource) throw resource;
+      return result;
+    } catch (error) { return rethrowNative(error); }
   }
 
   /**
@@ -107,7 +140,8 @@ export class PargRuntimeCore {
    * observed before the failure plus the failure wire.
    */
   parseShapeRecovering(input: string): RecoveryEnvelope {
-    return JSON.parse(this.artifact.parseShapeRecovering(this.entry, input));
+    try { return JSON.parse(this.artifact.parseShapeRecovering(this.entry, input)); }
+    catch (error) { return rethrowNative(error); }
   }
 
   /** Apply the entry's bindings to a parsanol-shape tree. */

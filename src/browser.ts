@@ -2,7 +2,7 @@
 import initWasm, * as webWasm from "../vendor/parsanol-web/parsanol.js";
 import type { InitInput } from "../vendor/parsanol-web/parsanol.js";
 import { PargRuntimeCore, type WasmModule } from "./runtime-core.js";
-export { deriveTemplate, renderSegments, materializeFromSchema } from "./runtime-core.js";
+export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded } from "./runtime-core.js";
 export type { FieldRequirement, EntrySchema, Schema, RenderSegment, RecoveryError, RecoveryEnvelope, ParsingCompatibility, CompatibilityEnvelope, Materialized } from "./runtime-core.js";
 
 let initialized = false;

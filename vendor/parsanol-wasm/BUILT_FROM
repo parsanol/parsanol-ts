@@ -1,2 +1,2 @@
-4b8351aae8e403e73aaa306111250ebd56c12e0f
-explicit Parslet compatibility candidate; Cargo dev wasm32 build, wasm-bindgen0.2.130 --target=nodejs; see BUILT_FROM.json
+20d5e6cebcade3cf2111a00a7ef3f5b69d673481
+release WASM, 8 MiB linear stack, typed rule/VM-call guards; see BUILT_FROM.json

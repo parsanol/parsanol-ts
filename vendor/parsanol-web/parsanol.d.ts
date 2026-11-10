@@ -215,8 +215,8 @@ export interface InitOutput {
     readonly parsanol_result_error: (a: number) => number;
     readonly parsanol_result_free: (a: number) => void;
     readonly parsanol_result_success: (a: number) => number;
-    readonly parsanol_string_free: (a: number) => void;
     readonly parsanol_version: () => number;
+    readonly parsanol_string_free: (a: number) => void;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
     readonly __wbindgen_free: (a: number, b: number, c: number) => void;

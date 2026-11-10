@@ -492,6 +492,10 @@ function __wbg_get_imports() {
             const ret = new Array();
             return ret;
         },
+        __wbg_new_787b9fb330d55d78: function(arg0, arg1) {
+            const ret = new Error(getStringFromWasm0(arg0, arg1));
+            return ret;
+        },
         __wbg_new_bb74001155cb8ca8: function() {
             const ret = new Error();
             return ret;
@@ -508,6 +512,9 @@ function __wbg_get_imports() {
             const ret = Reflect.set(arg0, arg1, arg2);
             return ret;
         }, arguments); },
+        __wbg_set_name_822e3903f3184979: function(arg0, arg1, arg2) {
+            arg0.name = getStringFromWasm0(arg1, arg2);
+        },
         __wbg_stack_575c4e0918581b9c: function(arg0, arg1) {
             const ret = arg1.stack;
             const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);

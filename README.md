@@ -115,3 +115,11 @@ and HTTP failures. Set `CHROME_BIN` to an existing browser if needed.
 `npm run refresh-web-wasm -- 0.20.12` reproduces the vendored browser assets
 from the pinned official npm release; keep its version aligned with the Node
 engine. No Rust build or Node polyfill runs in the browser.
+
+Parser resource guards are distinct from syntax refusals. The WASM engine keeps
+its 1000 rule-reference recursion budget and additionally limits simultaneous VM
+atom calls to 1024, before the host call stack can throw and strand a borrow.
+`RecursionLimitExceeded` and `CallDepthLimitExceeded` expose `category`, `depth`
+and `maxDepth`. These budgets count engine calls, not parentheses in user input.
+A resource abort leaves the artifact reusable and freeable. Generic VM/host errors
+retain their original type; they are never relabeled as a depth error.

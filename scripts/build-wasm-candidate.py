@@ -19,8 +19,8 @@ with tempfile.TemporaryDirectory(prefix='parsanol-engine-build-')as temporary:
  temporary=Path(temporary);(temporary/'src').mkdir();(temporary/'src/lib.rs').write_text('pub use parsanol::*;\n')
  (temporary/'Cargo.toml').write_text('[package]\nname="stage-compatibility-wasm-probe"\nversion="0.1.0"\nedition="2021"\n[workspace]\n[dependencies]\nparsanol={path='+json.dumps(str(source/'parsanol'))+',features=["wasm"]}\nserde_json={version="1.0",features=["preserve_order","arbitrary_precision"]}\n')
  shutil.copyfile(lock,temporary/'Cargo.lock')
- subprocess.run([args.cargo,'build','--locked','--manifest-path',str(temporary/'Cargo.toml'),'-p','parsanol','--lib','--target','wasm32-unknown-unknown'],env=env,check=True)
- wasm=args.target_dir.resolve()/'wasm32-unknown-unknown/debug/parsanol.wasm'
+ subprocess.run([args.cargo,'rustc','--release','--locked','--manifest-path',str(temporary/'Cargo.toml'),'-p','parsanol','--lib','--target','wasm32-unknown-unknown','--','-C','link-arg=-zstack-size=8388608'],env=env,check=True)
+ wasm=args.target_dir.resolve()/'wasm32-unknown-unknown/release/parsanol.wasm'
  for target,directory in [('web','parsanol-web'),('nodejs','parsanol-wasm')]:
   output=temporary/target;subprocess.run([str(args.bindgen),str(wasm),'--target',target,'--out-dir',str(output)],check=True);dest=ROOT/'vendor'/directory
   for name in ['parsanol.js','parsanol_bg.wasm','parsanol_bg.wasm.d.ts','parsanol.d.ts']:shutil.copyfile(output/name,dest/('parsanol.cjs'if target=='nodejs'and name=='parsanol.js'else name))
