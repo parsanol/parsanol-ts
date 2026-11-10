@@ -17,6 +17,13 @@ export declare class CallDepthLimitExceeded extends Error {
     readonly category = "call_depth_limit";
     constructor(depth: number, maxDepth: number, message?: string);
 }
+/** Container nesting budget at the WASM binding shape-JSON bridge. */
+export declare class ShapeDepthLimitExceeded extends Error {
+    readonly depth: number;
+    readonly maxDepth: number;
+    readonly category = "shape_depth_limit";
+    constructor(depth: number, maxDepth: number, message?: string);
+}
 /** A field requirement from the binding-requirements schema. */
 export interface FieldRequirement {
     type: string;
@@ -65,7 +72,7 @@ export declare class PargRuntimeCore {
      * This is a parse result, not a best-effort recovery capture envelope. */
     parseShapeWithCompatibility(input: string, compatibility: ParsingCompatibility): CompatibilityEnvelope;
     /**
-     * Best-effort recovery (TODO.sota/1): never throws. Success returns
+     * Best-effort syntax recovery. Resource aborts throw typed errors. Success returns
      * `{ ok: true, shape }`; failure returns
      * `{ ok: false, captures, error, consumed_upto }` — the captures
      * observed before the failure plus the failure wire.

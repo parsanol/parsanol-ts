@@ -45,7 +45,7 @@ function wasm() {
     return wasmModule;
 }
 import { PargRuntimeCore } from "./runtime-core.js";
-export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded } from "./runtime-core.js";
+export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded, ShapeDepthLimitExceeded } from "./runtime-core.js";
 /** Node entry: preserves synchronous WASM initialization and filesystem helpers. */
 export class PargRuntime extends PargRuntimeCore {
     constructor(artifactJson, entry) {

@@ -22,6 +22,18 @@ export class CallDepthLimitExceeded extends Error {
         this.name = "CallDepthLimitExceeded";
     }
 }
+/** Container nesting budget at the WASM binding shape-JSON bridge. */
+export class ShapeDepthLimitExceeded extends Error {
+    depth;
+    maxDepth;
+    category = "shape_depth_limit";
+    constructor(depth, maxDepth, message) {
+        super(message ?? `Binding shape depth exceeded: depth ${depth}, limit ${maxDepth}`);
+        this.depth = depth;
+        this.maxDepth = maxDepth;
+        this.name = "ShapeDepthLimitExceeded";
+    }
+}
 function nativeResource(value) {
     if (value === null || typeof value !== "object")
         return null;
@@ -33,6 +45,8 @@ function nativeResource(value) {
         return new RecursionLimitExceeded(wire["depth"], wire["max_depth"], message);
     if (wire["category"] === "call_depth_limit")
         return new CallDepthLimitExceeded(wire["depth"], wire["max_depth"], message);
+    if (wire["category"] === "shape_depth_limit")
+        return new ShapeDepthLimitExceeded(wire["depth"], wire["max_depth"], message);
     return null;
 }
 function rethrowNative(error) { throw nativeResource(error) ?? error; }
@@ -115,7 +129,7 @@ export class PargRuntimeCore {
         }
     }
     /**
-     * Best-effort recovery (TODO.sota/1): never throws. Success returns
+     * Best-effort syntax recovery. Resource aborts throw typed errors. Success returns
      * `{ ok: true, shape }`; failure returns
      * `{ ok: false, captures, error, consumed_upto }` — the captures
      * observed before the failure plus the failure wire.
@@ -130,7 +144,12 @@ export class PargRuntimeCore {
     }
     /** Apply the entry's bindings to a parsanol-shape tree. */
     applyBindings(shape) {
-        return JSON.parse(this.artifact.applyBindings(this.entry, JSON.stringify(shape)));
+        try {
+            return JSON.parse(this.artifact.applyBindings(this.entry, JSON.stringify(shape)));
+        }
+        catch (error) {
+            return rethrowNative(error);
+        }
     }
     /** Apply an entry's DECLARED bindings artifact (parsanol-ruby#432) to
      * a parsanol-shape tree. The engine verifies the artifact (kind,
@@ -139,7 +158,12 @@ export class PargRuntimeCore {
      * the shared apply core runs — the JSON materialized is the JSON the
      * checksum pinned. */
     applyBindingsArtifact(bindingsJson, shape) {
-        return JSON.parse(this.artifact.applyBindingsArtifact(bindingsJson, this.entry, JSON.stringify(shape)));
+        try {
+            return JSON.parse(this.artifact.applyBindingsArtifact(bindingsJson, this.entry, JSON.stringify(shape)));
+        }
+        catch (error) {
+            return rethrowNative(error);
+        }
     }
     /** Parse and bind in one step. */
     parseAndBind(input) {

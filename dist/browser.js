@@ -1,7 +1,7 @@
 /** Browser entry backed by the target=web Parsanol engine. */
 import initWasm, * as webWasm from "../vendor/parsanol-web/parsanol.js";
 import { PargRuntimeCore } from "./runtime-core.js";
-export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded } from "./runtime-core.js";
+export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded, ShapeDepthLimitExceeded } from "./runtime-core.js";
 let initialized = false;
 /** Fetch/instantiate the web-target engine; custom bytes, module or URL are supported. */
 export async function initialize(input) {

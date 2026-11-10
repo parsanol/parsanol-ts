@@ -1,6 +1,6 @@
 import type { InitInput } from "../vendor/parsanol-web/parsanol.js";
 import { PargRuntimeCore } from "./runtime-core.js";
-export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded } from "./runtime-core.js";
+export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded, ShapeDepthLimitExceeded } from "./runtime-core.js";
 export type { FieldRequirement, EntrySchema, Schema, RenderSegment, RecoveryError, RecoveryEnvelope, ParsingCompatibility, CompatibilityEnvelope, Materialized } from "./runtime-core.js";
 /** Fetch/instantiate the web-target engine; custom bytes, module or URL are supported. */
 export declare function initialize(input?: InitInput | Promise<InitInput>): Promise<void>;

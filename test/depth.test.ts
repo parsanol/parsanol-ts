@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { PargRuntime, CallDepthLimitExceeded } from "../src/runtime.js";
+import { PargRuntime, CallDepthLimitExceeded, ShapeDepthLimitExceeded } from "../src/runtime.js";
 
 // Same recursive resource fixture as parsanol-rs parg_compatibility.rs.
 function runtime(): PargRuntime {
@@ -25,6 +25,20 @@ describe('typed WASM call-depth resources',()=>{
         });
         assert.doesNotThrow(()=>rt.parseShape('x'));
       }
+    }finally{rt.artifact.free();}
+  });
+  it('round-trips bounded shape JSON and reports excessive shape nesting separately',()=>{
+    const rt=runtime();
+    try {
+      let shape:unknown='x';
+      for(let depth=1;depth<=513;depth++){
+        shape=[shape];
+        if(depth===128||depth===512)assert.deepEqual(rt.applyBindings(shape),{});
+      }
+      assert.throws(()=>rt.applyBindings(shape),error=>{
+        assert(error instanceof ShapeDepthLimitExceeded);assert.equal(error.depth,513);assert.equal(error.maxDepth,512);return true;
+      });
+      assert.deepEqual(rt.applyBindings(rt.parseShape('x')),{});
     }finally{rt.artifact.free();}
   });
   it('preserves generic VM and host errors without inventing a depth category',()=>{

@@ -8,7 +8,7 @@
  */
 export declare function compileSource(source: string): Record<string, unknown>;
 import { PargRuntimeCore } from "./runtime-core.js";
-export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded } from "./runtime-core.js";
+export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded, ShapeDepthLimitExceeded } from "./runtime-core.js";
 export type { FieldRequirement, EntrySchema, Schema, RenderSegment, RecoveryError, RecoveryEnvelope, ParsingCompatibility, CompatibilityEnvelope, Materialized } from "./runtime-core.js";
 /** Node entry: preserves synchronous WASM initialization and filesystem helpers. */
 export declare class PargRuntime extends PargRuntimeCore {

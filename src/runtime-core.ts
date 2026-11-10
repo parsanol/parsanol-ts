@@ -25,13 +25,22 @@ export class CallDepthLimitExceeded extends Error {
     this.name = "CallDepthLimitExceeded";
   }
 }
-function nativeResource(value: unknown): RecursionLimitExceeded | CallDepthLimitExceeded | null {
+/** Container nesting budget at the WASM binding shape-JSON bridge. */
+export class ShapeDepthLimitExceeded extends Error {
+  readonly category = "shape_depth_limit";
+  constructor(readonly depth: number, readonly maxDepth: number, message?: string) {
+    super(message ?? `Binding shape depth exceeded: depth ${depth}, limit ${maxDepth}`);
+    this.name = "ShapeDepthLimitExceeded";
+  }
+}
+function nativeResource(value: unknown): RecursionLimitExceeded | CallDepthLimitExceeded | ShapeDepthLimitExceeded | null {
   if (value === null || typeof value !== "object") return null;
   const wire = value as Record<string, unknown>;
   if (typeof wire["depth"] !== "number" || typeof wire["max_depth"] !== "number") return null;
   const message = typeof wire["message"] === "string" ? wire["message"] : undefined;
   if (wire["category"] === "recursion_limit") return new RecursionLimitExceeded(wire["depth"], wire["max_depth"], message);
   if (wire["category"] === "call_depth_limit") return new CallDepthLimitExceeded(wire["depth"], wire["max_depth"], message);
+  if (wire["category"] === "shape_depth_limit") return new ShapeDepthLimitExceeded(wire["depth"], wire["max_depth"], message);
   return null;
 }
 function rethrowNative(error: unknown): never { throw nativeResource(error) ?? error; }
@@ -134,7 +143,7 @@ export class PargRuntimeCore {
   }
 
   /**
-   * Best-effort recovery (TODO.sota/1): never throws. Success returns
+   * Best-effort syntax recovery. Resource aborts throw typed errors. Success returns
    * `{ ok: true, shape }`; failure returns
    * `{ ok: false, captures, error, consumed_upto }` — the captures
    * observed before the failure plus the failure wire.
@@ -146,7 +155,8 @@ export class PargRuntimeCore {
 
   /** Apply the entry's bindings to a parsanol-shape tree. */
   applyBindings(shape: unknown): Record<string, unknown> {
-    return JSON.parse(this.artifact.applyBindings(this.entry, JSON.stringify(shape)));
+    try { return JSON.parse(this.artifact.applyBindings(this.entry, JSON.stringify(shape))); }
+    catch (error) { return rethrowNative(error); }
   }
 
   /** Apply an entry's DECLARED bindings artifact (parsanol-ruby#432) to
@@ -159,9 +169,9 @@ export class PargRuntimeCore {
     bindingsJson: string,
     shape: unknown,
   ): Record<string, unknown> {
-    return JSON.parse(
-      this.artifact.applyBindingsArtifact(bindingsJson, this.entry, JSON.stringify(shape)),
-    );
+    try {
+      return JSON.parse(this.artifact.applyBindingsArtifact(bindingsJson, this.entry, JSON.stringify(shape)));
+    } catch (error) { return rethrowNative(error); }
   }
 
   /** Parse and bind in one step. */

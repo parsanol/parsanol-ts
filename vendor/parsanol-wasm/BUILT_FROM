@@ -1,2 +1,2 @@
-20d5e6cebcade3cf2111a00a7ef3f5b69d673481
-release WASM, 8 MiB linear stack, typed rule/VM-call guards; see BUILT_FROM.json
+75eb23340579d3ec051c0f32b88ff63caf6742c5
+Release WASM, explicit parser and binding shape resource budgets; see BUILT_FROM.json

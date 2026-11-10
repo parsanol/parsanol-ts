@@ -121,5 +121,10 @@ its 1000 rule-reference recursion budget and additionally limits simultaneous VM
 atom calls to 1024, before the host call stack can throw and strand a borrow.
 `RecursionLimitExceeded` and `CallDepthLimitExceeded` expose `category`, `depth`
 and `maxDepth`. These budgets count engine calls, not parentheses in user input.
+Binding shape JSON has a separate 512-container budget. `applyBindings` and
+`applyBindingsArtifact` throw `ShapeDepthLimitExceeded` (`category: "shape_depth_limit"`,
+`depth`, `maxDepth`) above that budget. The bounded bridge accepts parser-produced
+depth-64 Amath shapes, which exceed serde JSON's implicit 127-container guard.
+
 A resource abort leaves the artifact reusable and freeable. Generic VM/host errors
 retain their original type; they are never relabeled as a depth error.
