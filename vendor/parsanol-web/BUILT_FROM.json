@@ -1,0 +1,17 @@
+{
+  "package": "@parsanol/wasm",
+  "version": "0.20.12",
+  "target": "web",
+  "repository": "https://github.com/parsanol/parsanol-rs",
+  "tarball": "https://registry.npmjs.org/@parsanol/wasm/-/wasm-0.20.12.tgz",
+  "integrity": "sha512-J1IOIbTfmJPaYn4Hr3cDHiHywoxPrbIPH6/ZT+Q/MqRihea3QfxXlyHdYnaolamweYFd28sKIHiFgSXrbdKS4g==",
+  "tarball_sha256": "c9cca9a060b232e53e13b3c386fc05a096edc030b728d43b79b78146d12344bf",
+  "files": {
+    "parsanol.js": "d9eebbda9b8892927aee273b136a89e97ba7b4f0d189643643492f70ef1d0f12",
+    "LICENSE": "47f4778bc0bfbeb3614d173dd1ec09ddd8cab994039193e2d3de2edcd7886c7e",
+    "parsanol_bg.wasm": "6813975a8e38f37b2eef65396bec0cd8fe0dcc9d2844cf41653320d3136115b5",
+    "parsanol_bg.wasm.d.ts": "fcedf470eafcd42dbd5d6e8dbfa9362bffdea325db7071d9d0373ee62ce05e8d",
+    "README.md": "a5baa46b19a57b5414bf87484585b4f2916c940a4ae4f0844ba4d6bc85d32fc9",
+    "parsanol.d.ts": "006608236ecf4ed663f48ad5f5dc9acd9090007cd945fe8cab1d865986ea197a"
+  }
+}
