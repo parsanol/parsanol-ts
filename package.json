@@ -32,7 +32,8 @@
     "prepublishOnly": "npm run build",
     "bench": "node bench/bench.mjs",
     "test:browser": "npm run build && python3 scripts/test-browser.py",
-    "refresh-web-wasm": "python3 scripts/refresh-web-wasm.py"
+    "refresh-web-wasm": "python3 scripts/refresh-web-wasm.py",
+    "refresh-wasm-candidate": "python3 scripts/build-wasm-candidate.py"
   },
   "engines": {
     "node": ">=22"

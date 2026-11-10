@@ -43,6 +43,12 @@ export class PargArtifactJs {
      */
     parseShapeRecovering(entry: string, input: string): string;
     /**
+     * Explicit compatibility without changing parseShape defaults.
+     * The JSON envelope contains either shape or causal error diagnostics;
+     * it does not claim best-effort recovery captures.
+     */
+    parseShapeWithCompatibility(entry: string, input: string, compatibility: string): string;
+    /**
      * Parse an entry with the native engine; returns the parsanol-shape
      * tree as JSON text.
      */

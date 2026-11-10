@@ -151,6 +151,36 @@ export class PargArtifactJs {
         return takeFromExternrefTable0(ret[0]);
     }
     /**
+     * Explicit compatibility without changing parseShape defaults.
+     * The JSON envelope contains either shape or causal error diagnostics;
+     * it does not claim best-effort recovery captures.
+     * @param {string} entry
+     * @param {string} input
+     * @param {string} compatibility
+     * @returns {string}
+     */
+    parseShapeWithCompatibility(entry, input, compatibility) {
+        let ptr0, len0, ptr1, len1, ptr2, len2;
+        try {
+            ptr0 = passStringToWasm0(entry, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len0 = WASM_VECTOR_LEN;
+            ptr1 = passStringToWasm0(input, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len1 = WASM_VECTOR_LEN;
+            ptr2 = passStringToWasm0(compatibility, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len2 = WASM_VECTOR_LEN;
+        } catch (e) {
+            if (ptr2) { wasm.__wbindgen_free(ptr2, len2 * 1, 1); }
+            if (ptr1) { wasm.__wbindgen_free(ptr1, len1 * 1, 1); }
+            if (ptr0) { wasm.__wbindgen_free(ptr0, len0 * 1, 1); }
+            throw e;
+        }
+        const ret = wasm.pargartifactjs_parseShapeWithCompatibility(this.__wbg_ptr, ptr0, len0, ptr1, len1, ptr2, len2);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
      * Parse an entry with the native engine; returns the parsanol-shape
      * tree as JSON text.
      * @param {string} entry

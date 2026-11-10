@@ -1,9 +1,9 @@
-/** Browser entry backed by the official target=web Parsanol engine. */
+/** Browser entry backed by the target=web Parsanol engine. */
 import initWasm, * as webWasm from "../vendor/parsanol-web/parsanol.js";
 import type { InitInput } from "../vendor/parsanol-web/parsanol.js";
 import { PargRuntimeCore, type WasmModule } from "./runtime-core.js";
 export { deriveTemplate, renderSegments, materializeFromSchema } from "./runtime-core.js";
-export type { FieldRequirement, EntrySchema, Schema, RenderSegment, RecoveryError, RecoveryEnvelope, Materialized } from "./runtime-core.js";
+export type { FieldRequirement, EntrySchema, Schema, RenderSegment, RecoveryError, RecoveryEnvelope, ParsingCompatibility, CompatibilityEnvelope, Materialized } from "./runtime-core.js";
 
 let initialized = false;
 

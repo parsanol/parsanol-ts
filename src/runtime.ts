@@ -56,7 +56,7 @@ function wasm(): WasmModule {
 
 import { PargRuntimeCore, type WasmModule } from "./runtime-core.js";
 export { deriveTemplate, renderSegments, materializeFromSchema } from "./runtime-core.js";
-export type { FieldRequirement, EntrySchema, Schema, RenderSegment, RecoveryError, RecoveryEnvelope, Materialized } from "./runtime-core.js";
+export type { FieldRequirement, EntrySchema, Schema, RenderSegment, RecoveryError, RecoveryEnvelope, ParsingCompatibility, CompatibilityEnvelope, Materialized } from "./runtime-core.js";
 
 /** Node entry: preserves synchronous WASM initialization and filesystem helpers. */
 export class PargRuntime extends PargRuntimeCore {

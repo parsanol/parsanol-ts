@@ -31,6 +31,24 @@ try {
   await Promise.all([initialize(),initialize()]);
   const compiled=compileSource(fixture.source);
   assert(equal(compiled,fixture.artifact),'browser compiler agrees with Node artifact');
+  const canonicalPolicy=value=>Array.isArray(value)?value.map(canonicalPolicy):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonicalPolicy(value[key])])):value;
+  for(const [prefix,input,causal]of [['a','ab?',1],['α','αb?',2]]){
+    const envelope={shape:'parsanol-tree/v2',grammar:'DiagnosticPolicy',version:'1.0.0',default_entry:'main',entries:{main:{root:'main',grammar:{root:6,atoms:[{Str:{pattern:prefix+'b'}},{Str:{pattern:'c'}},{Sequence:{atoms:[0,1]}},{Lookahead:{atom:2,positive:false}},{Str:{pattern:prefix}},{Str:{pattern:'!'}},{Sequence:{atoms:[3,4,5]}}]}}}};
+    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(canonicalPolicy(envelope))));
+    envelope.checksum='sha256:'+Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
+    const policyRuntime=new PargRuntime(JSON.stringify(envelope));
+    try{
+      for(const [mode,offset]of [['strict',causal+1],['parslet',causal]]){
+        const result=policyRuntime.parseShapeWithCompatibility(input,mode);
+        assert(result.ok===false&&result.error.offset===offset,'browser policy '+prefix+' '+mode);
+      }
+      assert(policyRuntime.parseShapeRecovering(input).error.offset===causal+1,'browser old strict policy '+prefix);
+      assert(policyRuntime.parseShapeWithCompatibility(prefix+'!','parslet').ok,'browser policy accepts '+prefix);
+      let unknown=false;try{policyRuntime.parseShapeWithCompatibility(input,'unknown');}catch{unknown=true;}
+      assert(unknown,'browser unknown policy '+prefix);
+    }finally{policyRuntime.artifact.free();}
+  }
+
   const runtime=new PargRuntime(JSON.stringify(compiled));
   assert(equal(runtime.parseShape('a=1;b=2;'),fixture.shape),'native browser parse shape agrees with Node');
   assert(equal(runtime.applyBindings(runtime.parseShape('a=1;b=2;')),fixture.bound),'browser bindings agree with Node');

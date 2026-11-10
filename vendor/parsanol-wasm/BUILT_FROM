@@ -1,2 +1,2 @@
-7257c5c557c569dc14a303349a80feff18032dae
-built with: wasm-pack build --target=nodejs --features wasm (from parsanol-rs/parsanol)
+4b8351aae8e403e73aaa306111250ebd56c12e0f
+explicit Parslet compatibility candidate; Cargo dev wasm32 build, wasm-bindgen0.2.130 --target=nodejs; see BUILT_FROM.json

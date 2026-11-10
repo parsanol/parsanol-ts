@@ -91,6 +91,15 @@ export class PargRuntimeCore {
     return JSON.parse(this.artifact.parseShape(this.entry, input));
   }
 
+  /** Explicit historical memo/causal-diagnostic policy; old APIs remain strict.
+   * This is a parse result, not a best-effort recovery capture envelope. */
+  parseShapeWithCompatibility(input: string, compatibility: ParsingCompatibility): CompatibilityEnvelope {
+    if (typeof this.artifact.parseShapeWithCompatibility !== "function") {
+      throw new Error("native engine does not expose explicit parsing compatibility");
+    }
+    return JSON.parse(this.artifact.parseShapeWithCompatibility(this.entry, input, compatibility));
+  }
+
   /**
    * Best-effort recovery (TODO.sota/1): never throws. Success returns
    * `{ ok: true, shape }`; failure returns
@@ -219,6 +228,11 @@ export function renderSegments(
 }
 
 /** A schema-materialized identifier: typed fields plus provenance. */
+export type ParsingCompatibility = "strict" | "parslet";
+export type CompatibilityEnvelope =
+  | { ok: true; shape: unknown }
+  | { ok: false; error: { offset: number; ranked: [number, string[]][] } };
+
 export interface RecoveryError {
   offset: number;
   message?: string;
