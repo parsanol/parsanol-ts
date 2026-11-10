@@ -1,9 +1,9 @@
 {
   "repository": "https://github.com/parsanol/parsanol-rs",
   "upstream_base": "74d6aa27987db8d3ffa38eb38a7e89c0d1b28da2",
-  "source_commit": "75eb23340579d3ec051c0f32b88ff63caf6742c5",
-  "built_source_commit": "75eb23340579d3ec051c0f32b88ff63caf6742c5",
-  "source_tree": "21d81f1ab26c1d060fae8a5b5a8ab3153074adf9",
+  "source_commit": "533e2425a5bde4a177e90a0c4fc8d22fdaacc987",
+  "built_source_commit": "533e2425a5bde4a177e90a0c4fc8d22fdaacc987",
+  "source_tree": "d788f65b16879df853bc23b872d641a920b93328",
   "built_source_tree_equal": true,
   "crate_version": "0.20.12",
   "unreleased_candidate": true,
@@ -21,7 +21,7 @@
   "files": {
     "parsanol.js": "5a2c63258b262951933f6ba5cd31cf66b99fcdb48ab1db2e150ef6872f159ba7",
     "LICENSE": "47f4778bc0bfbeb3614d173dd1ec09ddd8cab994039193e2d3de2edcd7886c7e",
-    "parsanol_bg.wasm": "d8baf748b1f1fc0bc0445fe8d6a83efd9b367d5b7e7a3a4b71648aaf54206b33",
+    "parsanol_bg.wasm": "0b6711ec94f45585f62838397b8510c06acbcf96c1486db8d282a51ddc949dc7",
     "parsanol_bg.wasm.d.ts": "ac620c8e3f325ba0e2ca1206887e5918711f8bbb19dd3b79458703ec8d6b36b1",
     "README.md": "a5baa46b19a57b5414bf87484585b4f2916c940a4ae4f0844ba4d6bc85d32fc9",
     "parsanol.d.ts": "26d9e1c0146687b14e7178e41af3e97e6178857c0d784ebb1034a3dd4e72ac58"
