@@ -86,3 +86,45 @@ any baked artifact that passes its embedded tests on the other engines
 passes here identically. Run the runtime tests with
 `PARG_ARTIFACT_DIR=<artifacts> npm test` (the artifact-gated case
 skips when no artifacts dir is set).
+
+## Browser runtime
+
+The browser entry uses the official `@parsanol/wasm` web build shipped with
+this package. It fetches WASM relative to the generated web module.
+
+```ts
+import initialize, { PargRuntime } from "parsanol/browser";
+await initialize();
+const parser = await PargRuntime.fromURL("/artifacts/example.json");
+const shape = parser.parseShape("input");
+```
+
+To provide your own WASM location or bytes, pass them to `initialize`. A
+synchronous constructor requires initialization first. Pass original artifact
+and binding JSON text unchanged; parsing and reserializing checksum-bound
+resources can change their numeric representations.
+
+The browser entry has HTTP `fromURL` instead of Node filesystem helpers. Its
+`compiledFrom(source)` uses asynchronous WebCrypto: `await` its result. The
+Node entry retains its synchronous API. Browser-aware package resolution also
+selects this entry; the explicit `/browser` import supplies its browser types.
+
+`npm run test:browser` checks the packed package in real Chrome/Chromium,
+including native parsing, compiler agreement, recovery, artifact verification,
+and HTTP failures. Set `CHROME_BIN` to an existing browser if needed.
+`npm run refresh-web-wasm -- 0.20.12` reproduces the vendored browser assets
+from the pinned official npm release; keep its version aligned with the Node
+engine. No Rust build or Node polyfill runs in the browser.
+
+Parser resource guards are distinct from syntax refusals. The WASM engine keeps
+its 1000 rule-reference recursion budget and additionally limits simultaneous VM
+atom calls to 1024, before the host call stack can throw and strand a borrow.
+`RecursionLimitExceeded` and `CallDepthLimitExceeded` expose `category`, `depth`
+and `maxDepth`. These budgets count engine calls, not parentheses in user input.
+Binding shape JSON has a separate 512-container budget. `applyBindings` and
+`applyBindingsArtifact` throw `ShapeDepthLimitExceeded` (`category: "shape_depth_limit"`,
+`depth`, `maxDepth`) above that budget. The bounded bridge accepts parser-produced
+depth-64 Amath shapes, which exceed serde JSON's implicit 127-container guard.
+
+A resource abort leaves the artifact reusable and freeable. Generic VM/host errors
+retain their original type; they are never relabeled as a depth error.

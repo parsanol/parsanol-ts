@@ -1,2 +1,2 @@
-7257c5c557c569dc14a303349a80feff18032dae
-built with: wasm-pack build --target=nodejs --features wasm (from parsanol-rs/parsanol)
+533e2425a5bde4a177e90a0c4fc8d22fdaacc987
+Release WASM, explicit parser and binding shape resource budgets; see BUILT_FROM.json
