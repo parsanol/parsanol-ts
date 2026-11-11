@@ -1,2 +1,2 @@
-533e2425a5bde4a177e90a0c4fc8d22fdaacc987
-Release WASM, explicit parser and binding shape resource budgets; see BUILT_FROM.json
+c780fe98c15ab73696d42641d1a7ca5db6df3c27
+built with: wasm-pack build --target=nodejs --features wasm (from parsanol-rs/parsanol)
