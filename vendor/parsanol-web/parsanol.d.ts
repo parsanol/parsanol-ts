@@ -1,3 +1,10 @@
+// Node usage: the default init fetches the wasm next to the module,
+// which Node does not serve; use initSync with pre-read bytes:
+//   import { initSync } from ./parsanol.js;
+//   import { readFileSync } from node:fs;
+//   initSync({ module: readFileSync(./parsanol_bg.wasm) });
+// The async bootstrap is the DEFAULT export (__wbg_init): Promise<InitOutput>.
+// parseAndBind returns {} when the entry declares no bindings block.
 /* tslint:disable */
 /* eslint-disable */
 
@@ -171,6 +178,21 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
+    readonly __wbg_pargartifactjs_free: (a: number, b: number) => void;
+    readonly __wbg_wasmparser_free: (a: number, b: number) => void;
+    readonly compileSource: (a: number, b: number) => [number, number, number, number];
+    readonly pargartifactjs_applyBindings: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
+    readonly pargartifactjs_applyBindingsArtifact: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
+    readonly pargartifactjs_entryNames: (a: number) => [number, number];
+    readonly pargartifactjs_new: (a: number, b: number) => [number, number, number];
+    readonly pargartifactjs_parseAndBind: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
+    readonly pargartifactjs_parseShape: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
+    readonly pargartifactjs_parseShapeRecovering: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
+    readonly pargartifactjs_parseShapeWithCompatibility: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
+    readonly pargartifactjs_runTests: (a: number) => [number, number, number];
+    readonly pargartifactjs_schema: (a: number) => [number, number, number];
+    readonly pargartifactjs_schemaTypescript: (a: number) => [number, number, number];
+    readonly pargartifactjs_semanticsHash: (a: number) => any;
     readonly parsanol_c_last_error: () => number;
     readonly parsanol_c_parse: (a: bigint, b: number, c: number, d: number) => number;
     readonly parsanol_c_parse_len: (a: bigint, b: number, c: number, d: number, e: number) => number;
@@ -195,27 +217,12 @@ export interface InitOutput {
     readonly parsanol_result_free: (a: number) => void;
     readonly parsanol_result_success: (a: number) => number;
     readonly parsanol_version: () => number;
-    readonly parsanol_string_free: (a: number) => void;
-    readonly __wbg_pargartifactjs_free: (a: number, b: number) => void;
-    readonly __wbg_wasmparser_free: (a: number, b: number) => void;
-    readonly compileSource: (a: number, b: number) => [number, number, number, number];
-    readonly pargartifactjs_applyBindings: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
-    readonly pargartifactjs_applyBindingsArtifact: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
-    readonly pargartifactjs_entryNames: (a: number) => [number, number];
-    readonly pargartifactjs_new: (a: number, b: number) => [number, number, number];
-    readonly pargartifactjs_parseAndBind: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
-    readonly pargartifactjs_parseShape: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
-    readonly pargartifactjs_parseShapeRecovering: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
-    readonly pargartifactjs_parseShapeWithCompatibility: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
-    readonly pargartifactjs_runTests: (a: number) => [number, number, number];
-    readonly pargartifactjs_schema: (a: number) => [number, number, number];
-    readonly pargartifactjs_schemaTypescript: (a: number) => [number, number, number];
-    readonly pargartifactjs_semanticsHash: (a: number) => any;
     readonly setPanicHook: () => void;
     readonly wasmparser_fromArtifact: (a: number, b: number, c: number, d: number) => [number, number, number];
     readonly wasmparser_new: (a: number, b: number) => [number, number, number];
     readonly wasmparser_parse: (a: number, b: number, c: number) => [number, number, number];
     readonly wasmparser_parse_flat: (a: number, b: number, c: number) => [number, number, number, number];
+    readonly parsanol_string_free: (a: number) => void;
     readonly wasmparser_parse_json: (a: number, b: number, c: number) => [number, number, number, number];
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
