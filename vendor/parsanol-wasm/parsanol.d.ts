@@ -26,6 +26,14 @@ export class PargArtifactJs {
      */
     entryNames(): string[];
     /**
+     * Lower the artifact to a constrained-decoder grammar form
+     * (`target`: "xgrammar" | "llguidance"); `recovery` lowers each
+     * declared resync pattern as an escape alternative at the
+     * repetition spine. Rust is the authoritative lowering — TS
+     * inherits it through this surface instead of a per-language port.
+     */
+    export(target: string, recovery: boolean): string;
+    /**
      * Load and checksum-verify an artifact envelope.
      */
     constructor(artifact_json: string);

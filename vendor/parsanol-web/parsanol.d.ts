@@ -33,6 +33,14 @@ export class PargArtifactJs {
      */
     entryNames(): string[];
     /**
+     * Lower the artifact to a constrained-decoder grammar form
+     * (`target`: "xgrammar" | "llguidance"); `recovery` lowers each
+     * declared resync pattern as an escape alternative at the
+     * repetition spine. Rust is the authoritative lowering — TS
+     * inherits it through this surface instead of a per-language port.
+     */
+    export(target: string, recovery: boolean): string;
+    /**
      * Load and checksum-verify an artifact envelope.
      */
     constructor(artifact_json: string);
@@ -184,6 +192,7 @@ export interface InitOutput {
     readonly pargartifactjs_applyBindings: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
     readonly pargartifactjs_applyBindingsArtifact: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
     readonly pargartifactjs_entryNames: (a: number) => [number, number];
+    readonly pargartifactjs_export: (a: number, b: number, c: number, d: number) => [number, number, number];
     readonly pargartifactjs_new: (a: number, b: number) => [number, number, number];
     readonly pargartifactjs_parseAndBind: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
     readonly pargartifactjs_parseShape: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
@@ -204,6 +213,7 @@ export interface InitOutput {
     readonly parsanol_grammar_new_with_error: (a: number, b: number) => number;
     readonly parsanol_grammar_root: (a: number) => number;
     readonly parsanol_parg_error: (a: number, b: number) => number;
+    readonly parsanol_parg_export: (a: number, b: number, c: number) => number;
     readonly parsanol_parg_free: (a: number) => void;
     readonly parsanol_parg_parse: (a: number, b: number) => number;
     readonly parsanol_parg_parse_recovering: (a: number, b: number, c: number) => number;
