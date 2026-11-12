@@ -83,6 +83,26 @@ export class PargArtifactJs {
         return v1;
     }
     /**
+     * Lower the artifact to a constrained-decoder grammar form
+     * (`target`: "xgrammar" | "llguidance"); `recovery` lowers each
+     * declared resync pattern as an escape alternative at the
+     * repetition spine. Rust is the authoritative lowering — TS
+     * inherits it through this surface instead of a per-language port.
+     * @param {string} target
+     * @param {boolean} recovery
+     * @returns {string}
+     */
+    export(target, recovery) {
+        const val2 = +recovery;
+        const ptr0 = passStringToWasm0(target, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.pargartifactjs_export(this.__wbg_ptr, ptr0, len0, val2);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
      * Load and checksum-verify an artifact envelope.
      * @param {string} artifact_json
      */
