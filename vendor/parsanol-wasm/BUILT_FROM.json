@@ -2,7 +2,7 @@
   "repository": "https://github.com/parsanol/parsanol-rs",
   "upstream_base": "74d6aa27987db8d3ffa38eb38a7e89c0d1b28da2",
   "source_commit": "48bf8ad13146ce3d833f70dc9699f0a98f893ede",
-  "built_source_commit": "81a559133cc439edce0dd7329728dd90aeaac1a8",
+  "built_source_commit": "20359b2e8321f2713416caabfffb11ed579921b7",
   "source_tree": "d788f65b16879df853bc23b872d641a920b93328",
   "built_source_tree_equal": true,
   "crate_version": "0.20.15",
@@ -19,7 +19,7 @@
   "lockfile": "scripts/wasm-build/Cargo.lock",
   "lockfile_sha256": "eb63200448a8c2750ff5d18f99a8829ffd6751f4ffe0186c364dc95282f16779",
   "files": {
-    "parsanol_bg.wasm": "b9e53bd52f04da822fd56e6bf3c517f97d0b3eb360ab96f456e1d2f7a750683e",
+    "parsanol_bg.wasm": "bb2b7d261f19969a24baa4c1e09888752e008fd46c066dad8a72736c849ab25e",
     "parsanol.d.ts": "2ab85fcd76585ddd81765cc615c119330afaf639112f7fd68fe77e82bbd8e693",
     "LICENSE": "47f4778bc0bfbeb3614d173dd1ec09ddd8cab994039193e2d3de2edcd7886c7e",
     "parsanol.cjs": "cd1b1f153f8bed33e03ed7040b91b4c60b4b3e0a455412db40476ab37e7dd4de",
