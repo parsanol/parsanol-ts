@@ -103,6 +103,34 @@ export class PargArtifactJs {
         return takeFromExternrefTable0(ret[0]);
     }
     /**
+     * Emit a render variant against a bound attribute map (rs#459
+     * slice 2 — the graduated generation path). `model_json` is the
+     * bound map as JSON text (what `parseAndBind` returns). Rust is
+     * the authoritative lowering; TS inherits it through this surface
+     * instead of a per-language renderer.
+     * @param {string} variant
+     * @param {string} model_json
+     * @returns {string}
+     */
+    generate(variant, model_json) {
+        let ptr0, len0, ptr1, len1;
+        try {
+            ptr0 = passStringToWasm0(variant, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len0 = WASM_VECTOR_LEN;
+            ptr1 = passStringToWasm0(model_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len1 = WASM_VECTOR_LEN;
+        } catch (e) {
+            if (ptr1) { wasm.__wbindgen_free(ptr1, len1 * 1, 1); }
+            if (ptr0) { wasm.__wbindgen_free(ptr0, len0 * 1, 1); }
+            throw e;
+        }
+        const ret = wasm.pargartifactjs_generate(this.__wbg_ptr, ptr0, len0, ptr1, len1);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
      * Load and checksum-verify an artifact envelope.
      * @param {string} artifact_json
      */
