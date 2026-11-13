@@ -8,6 +8,7 @@ export const pargartifactjs_applyBindings: (a: number, b: number, c: number, d: 
 export const pargartifactjs_applyBindingsArtifact: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
 export const pargartifactjs_entryNames: (a: number) => [number, number];
 export const pargartifactjs_export: (a: number, b: number, c: number, d: number) => [number, number, number];
+export const pargartifactjs_generate: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
 export const pargartifactjs_new: (a: number, b: number) => [number, number, number];
 export const pargartifactjs_parseAndBind: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
 export const pargartifactjs_parseShape: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
@@ -30,6 +31,7 @@ export const parsanol_grammar_root: (a: number) => number;
 export const parsanol_parg_error: (a: number, b: number) => number;
 export const parsanol_parg_export: (a: number, b: number, c: number) => number;
 export const parsanol_parg_free: (a: number) => void;
+export const parsanol_parg_generate: (a: number, b: number, c: number) => number;
 export const parsanol_parg_parse: (a: number, b: number) => number;
 export const parsanol_parg_parse_recovering: (a: number, b: number, c: number) => number;
 export const parsanol_parg_parse_with_compatibility: (a: number, b: number, c: number, d: number) => number;
