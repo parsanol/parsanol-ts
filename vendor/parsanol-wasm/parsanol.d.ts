@@ -34,6 +34,14 @@ export class PargArtifactJs {
      */
     export(target: string, recovery: boolean): string;
     /**
+     * Emit a render variant against a bound attribute map (rs#459
+     * slice 2 — the graduated generation path). `model_json` is the
+     * bound map as JSON text (what `parseAndBind` returns). Rust is
+     * the authoritative lowering; TS inherits it through this surface
+     * instead of a per-language renderer.
+     */
+    generate(variant: string, model_json: string): string;
+    /**
      * Load and checksum-verify an artifact envelope.
      */
     constructor(artifact_json: string);

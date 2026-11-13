@@ -41,6 +41,14 @@ export class PargArtifactJs {
      */
     export(target: string, recovery: boolean): string;
     /**
+     * Emit a render variant against a bound attribute map (rs#459
+     * slice 2 — the graduated generation path). `model_json` is the
+     * bound map as JSON text (what `parseAndBind` returns). Rust is
+     * the authoritative lowering; TS inherits it through this surface
+     * instead of a per-language renderer.
+     */
+    generate(variant: string, model_json: string): string;
+    /**
      * Load and checksum-verify an artifact envelope.
      */
     constructor(artifact_json: string);
@@ -193,6 +201,7 @@ export interface InitOutput {
     readonly pargartifactjs_applyBindingsArtifact: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
     readonly pargartifactjs_entryNames: (a: number) => [number, number];
     readonly pargartifactjs_export: (a: number, b: number, c: number, d: number) => [number, number, number];
+    readonly pargartifactjs_generate: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
     readonly pargartifactjs_new: (a: number, b: number) => [number, number, number];
     readonly pargartifactjs_parseAndBind: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
     readonly pargartifactjs_parseShape: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
@@ -215,6 +224,7 @@ export interface InitOutput {
     readonly parsanol_parg_error: (a: number, b: number) => number;
     readonly parsanol_parg_export: (a: number, b: number, c: number) => number;
     readonly parsanol_parg_free: (a: number) => void;
+    readonly parsanol_parg_generate: (a: number, b: number, c: number) => number;
     readonly parsanol_parg_parse: (a: number, b: number) => number;
     readonly parsanol_parg_parse_recovering: (a: number, b: number, c: number) => number;
     readonly parsanol_parg_parse_with_compatibility: (a: number, b: number, c: number, d: number) => number;
