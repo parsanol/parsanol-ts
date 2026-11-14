@@ -4,7 +4,7 @@ Requires a local Rust compiler/wasm32 standard library and wasm-bindgen0.2.130.
 No compiler/target/CLI installation or source checkout is performed here.
 """
 from pathlib import Path
-import argparse,hashlib,json,os,shutil,subprocess,tempfile
+import argparse,hashlib,json,os,re,shutil,subprocess,tempfile
 ROOT=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser();parser.add_argument('--source',type=Path,required=True);parser.add_argument('--bindgen',type=Path,required=True);parser.add_argument('--target-dir',type=Path,required=True);parser.add_argument('--cargo',default='cargo');parser.add_argument('--sysroot',type=Path);args=parser.parse_args()
 receipt=json.loads((ROOT/'vendor/parsanol-web/BUILT_FROM.json').read_text());source=args.source.resolve();head=subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip()
@@ -24,5 +24,5 @@ with tempfile.TemporaryDirectory(prefix='parsanol-engine-build-')as temporary:
  for target,directory in [('web','parsanol-web'),('nodejs','parsanol-wasm')]:
   output=temporary/target;subprocess.run([str(args.bindgen),str(wasm),'--target',target,'--out-dir',str(output)],check=True);dest=ROOT/'vendor'/directory
   for name in ['parsanol.js','parsanol_bg.wasm','parsanol_bg.wasm.d.ts','parsanol.d.ts']:shutil.copyfile(output/name,dest/('parsanol.cjs'if target=='nodejs'and name=='parsanol.js'else name))
-  data=json.loads((dest/'BUILT_FROM.json').read_text());data.update(built_source_commit=head,built_source_tree_equal=True,files={f.name:hashlib.sha256(f.read_bytes()).hexdigest()for f in dest.iterdir()if f.name not in ['BUILT_FROM','BUILT_FROM.json']});(dest/'BUILT_FROM.json').write_text(json.dumps(data,indent=2)+'\n')
+  crate_version=re.search(r'(?m)^version\s*=\s*"([^"]+)"',(source/'Cargo.toml').read_text()).group(1);data=json.loads((dest/'BUILT_FROM.json').read_text());data.update(crate_version=crate_version,built_source_commit=head,built_source_tree_equal=True,files={f.name:hashlib.sha256(f.read_bytes()).hexdigest()for f in dest.iterdir()if f.name not in ['BUILT_FROM','BUILT_FROM.json']});(dest/'BUILT_FROM.json').write_text(json.dumps(data,indent=2)+'\n')
 print('built both bindings from '+head)
