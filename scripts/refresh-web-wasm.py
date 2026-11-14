@@ -33,7 +33,7 @@ def main():
             for filename in FILES:
                 (target / filename).write_bytes(tar.extractfile('package/' + filename).read())
         provenance = {
-            'package': '@parsanol/wasm', 'version': args.version, 'target': 'web',
+            'package': '@parsanol/wasm', 'version': args.version, 'crate_version': args.version, 'target': 'web',
             'repository': 'https://github.com/parsanol/parsanol-rs',
             'tarball': f'https://registry.npmjs.org/@parsanol/wasm/-/wasm-{args.version}.tgz',
             'integrity': receipt['integrity'], 'tarball_sha256': hashlib.sha256(archive.read_bytes()).hexdigest(),

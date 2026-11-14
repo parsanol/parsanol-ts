@@ -5,7 +5,7 @@
   "built_source_commit": "2710668ceac29410ba9a7140a95cf12cb930870e",
   "source_tree": "d788f65b16879df853bc23b872d641a920b93328",
   "built_source_tree_equal": true,
-  "crate_version": "0.20.15",
+  "crate_version": "0.20.19",
   "unreleased_candidate": false,
   "target": "nodejs",
   "profile": "release",

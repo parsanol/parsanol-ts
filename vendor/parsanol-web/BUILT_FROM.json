@@ -1,6 +1,7 @@
 {
   "package": "@parsanol/wasm",
   "version": "0.20.19",
+  "crate_version": "0.20.19",
   "target": "web",
   "repository": "https://github.com/parsanol/parsanol-rs",
   "tarball": "https://registry.npmjs.org/@parsanol/wasm/-/wasm-0.20.19.tgz",
