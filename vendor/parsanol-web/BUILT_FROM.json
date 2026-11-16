@@ -1,22 +1,32 @@
 {
   "package": "@parsanol/wasm",
-  "version": "0.20.20",
-  "crate_version": "1.5.1",
+  "version": "1.5.1",
   "target": "web",
+  "kind": "ci-test-build-not-release",
   "repository": "https://github.com/parsanol/parsanol-rs",
-  "tarball": "https://registry.npmjs.org/@parsanol/wasm/-/wasm-0.20.20.tgz",
-  "integrity": "sha512-0YA0t5CT0oi1+GBTipUtpXVmoAZnrjNr2r8Fx2y7RgT2yojr8wRvIogcBJjmZcVwkJpK9mxOZyz6gvkq9cRqbg==",
-  "tarball_sha256": "b8f61f73efbd0e8ed6d101273c3b8b210f5375ff95cfbed6184259380c4b3bfb",
-  "files": {
-    "parsanol_bg.wasm": "f25f01d82c051cc730d9ca6f295504e3078a8e529483d98b676145bc6b731370",
-    "parsanol.d.ts": "03de8c7d014afb2aeeda797e0d2bd132ab3ffc32969a49d0295b44492c360f29",
-    "LICENSE": "47f4778bc0bfbeb3614d173dd1ec09ddd8cab994039193e2d3de2edcd7886c7e",
-    "parsanol.js": "676ac4245a84f1d5d97039fb6a159fd779be7fd2605f2a9d814c676fae7fa4f2",
-    "parsanol_bg.wasm.d.ts": "170f7f2242995004b213e404fc3ce9a6ffe6d29277e17fb772f660cf6c2156ae",
-    "README.md": "577c2d75ac98c331379a50698624b68c773eb4603648108f80f4399fde33d339"
+  "source_commit": "7c0ca7ed3414abd5a25f9eab2a09d7b29496f703",
+  "built_source_commit": "e1d5ea6abcc5ac3d8158a227adba7e20ff9a0a49",
+  "workflow": "WASM",
+  "run_id": "43871880885",
+  "run_attempt": "1",
+  "artifact": "https://github.com/parsanol/parsanol-rs/actions/runs/43871880885/artifacts/14227489370",
+  "tarball": "parsanol-wasm-1.5.1.tgz",
+  "tarball_sha256": "dc019dc6b2ef8d44085e0ed4bf63bc73439a81fe72f9f2d96ae0ae8c703217d7",
+  "cargo_lock_sha256": "87b5142e3cb481390825140920942b8c478f97e8b060a4af1decd5ba592a6396",
+  "profile": "release",
+  "versions": {
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "node": "v24.22.2",
+    "npm": "11.19.1",
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "wasm_bindgen": "wasm-bindgen 0.2.130"
   },
-  "source_commit": "62a64ae099d9d0004df3c60fdcc599a33667edcc",
-  "lockfile_sha256": "5500b0042ff4257563c110f3bfd15372fbe05ede2501caa49d8051b535cfadf7",
-  "built_source_commit": "62a64ae099d9d0004df3c60fdcc599a33667edcc",
-  "built_source_tree_equal": true
+  "files": {
+    "parsanol.js": "34d240782519e18c8ff04eb2478242ed311b41b8239a8dbf1901ae7e3fc7afae",
+    "parsanol.d.ts": "0a64f49cd7133d4155d8317b9df569c2fa9be3a57c2481a085bfb840170fe5b8",
+    "parsanol_bg.wasm": "b04c835d47c0bc61e1cb539cbca992579f48062ac865220962a6b39230fe87bd",
+    "parsanol_bg.wasm.d.ts": "5163aab573473fdf1112c890585aa67f73dd864856ce66f45882eea87487b10d",
+    "README.md": "577c2d75ac98c331379a50698624b68c773eb4603648108f80f4399fde33d339",
+    "LICENSE": "47f4778bc0bfbeb3614d173dd1ec09ddd8cab994039193e2d3de2edcd7886c7e"
+  }
 }

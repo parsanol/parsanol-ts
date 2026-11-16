@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { PargRuntime, type ParsingCompatibility } from "../src/runtime.js";
+import { PargRuntime, type ParsingCompatibility, type FailureReporter } from "../src/runtime.js";
 
 // Mirrors parsanol-rs portable/parser/compatibility_tests.rs's causal probe.
 function runtime(prefix: string): PargRuntime {
@@ -40,5 +40,34 @@ describe("explicit parsing compatibility", () => {
       rt.artifact.parseShapeWithCompatibility=undefined;
       assert.throws(()=>rt.parseShapeWithCompatibility("a!","parslet"),/does not expose/);
     } finally {rt.artifact.parseShapeWithCompatibility=method;rt.artifact.free();}
+  });
+});
+
+describe("explicit failure reporter", () => {
+  for (const [prefix,input,causal] of [["a","ab?",1],["α","αb?",2]] as const) {
+    it(`keeps the policy offset by default and reports the deepest UTF-8 offset for ${prefix}`, () => {
+      const rt=runtime(prefix);
+      try {
+        for(const policy of ["strict","parslet"] as const){
+          const plain=rt.parseShapeWithCompatibility(input,policy);
+          const reported=rt.parseShapeWithReporter(input,policy,"default");
+          assert.deepEqual(reported,plain);
+          const deepest=rt.parseShapeWithReporter(input,policy,"deepest");
+          assert.equal(deepest.ok,false);
+          if(!deepest.ok)assert.equal(deepest.error.offset,causal+1);
+        }
+        const accepted=rt.parseShapeWithReporter(prefix+"!","parslet","deepest");
+        assert.equal(accepted.ok,true);
+        if(accepted.ok)assert.deepEqual(accepted.shape,rt.parseShape(prefix+"!"));
+        assert.throws(()=>rt.parseShapeWithReporter(input,"strict","unknown" as FailureReporter),/reporter/);
+      } finally {rt.artifact.free();}
+    });
+  }
+  it("fails explicitly when an older injected engine lacks the reporter ABI", () => {
+    const rt=runtime("a");const method=rt.artifact.parseShapeWithReporter;
+    try {
+      rt.artifact.parseShapeWithReporter=undefined;
+      assert.throws(()=>rt.parseShapeWithReporter("a!","parslet","deepest"),/does not expose/);
+    } finally {rt.artifact.parseShapeWithReporter=method;rt.artifact.free();}
   });
 });

@@ -31,16 +31,20 @@ const packageRootCache = (() => {
 function packageRoot() {
     return packageRootCache;
 }
-// The vendored wasm glue is CommonJS and lives outside the compiled tree,
-// so resolve it against the package root at runtime. Loading is deferred
-// to the first artifact construction: importing this module costs
-// nothing, and the ~1.5 MB wasm compiles only when parsing is real.
+// Node and browsers share the one vendored web-target engine. Its ESM glue
+// lives outside the compiled tree, so it is resolved against the package
+// root (require of ESM, Node >= 22.12) and instantiated synchronously from
+// the package's own bytes. Loading is deferred to the first artifact
+// construction: importing this module costs nothing, and the ~1.5 MB wasm
+// compiles only when parsing is real.
 const require = createRequire(import.meta.url);
 let wasmModule = null;
 function wasm() {
     if (wasmModule === null) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        wasmModule = require(join(packageRoot(), "vendor", "parsanol-wasm", "parsanol.cjs"));
+        const vendor = join(packageRoot(), "vendor", "parsanol-web");
+        const glue = require(join(vendor, "parsanol.js"));
+        glue.initSync({ module: readFileSync(join(vendor, "parsanol_bg.wasm")) });
+        wasmModule = glue;
     }
     return wasmModule;
 }

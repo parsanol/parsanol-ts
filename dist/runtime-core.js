@@ -128,6 +128,24 @@ export class PargRuntimeCore {
             return rethrowNative(error);
         }
     }
+    /** Explicit failure reporter under an explicit policy: "default" keeps the
+     * causal diagnostic, "deepest" reports the furthest failure (the Ruby
+     * engine's refusal report). Older APIs keep their reporters. */
+    parseShapeWithReporter(input, compatibility, reporter) {
+        if (typeof this.artifact.parseShapeWithReporter !== "function") {
+            throw new Error("native engine does not expose an explicit failure reporter");
+        }
+        try {
+            const result = JSON.parse(this.artifact.parseShapeWithReporter(this.entry, input, compatibility, reporter));
+            const resource = nativeResource(result?.error);
+            if (resource)
+                throw resource;
+            return result;
+        }
+        catch (error) {
+            return rethrowNative(error);
+        }
+    }
     /**
      * Best-effort syntax recovery. Resource aborts throw typed errors. Success returns
      * `{ ok: true, shape }`; failure returns

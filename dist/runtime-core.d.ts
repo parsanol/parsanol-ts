@@ -71,6 +71,10 @@ export declare class PargRuntimeCore {
     /** Explicit historical memo/causal-diagnostic policy; old APIs remain strict.
      * This is a parse result, not a best-effort recovery capture envelope. */
     parseShapeWithCompatibility(input: string, compatibility: ParsingCompatibility): CompatibilityEnvelope;
+    /** Explicit failure reporter under an explicit policy: "default" keeps the
+     * causal diagnostic, "deepest" reports the furthest failure (the Ruby
+     * engine's refusal report). Older APIs keep their reporters. */
+    parseShapeWithReporter(input: string, compatibility: ParsingCompatibility, reporter: FailureReporter): CompatibilityEnvelope;
     /**
      * Best-effort syntax recovery. Resource aborts throw typed errors. Success returns
      * `{ ok: true, shape }`; failure returns
@@ -124,6 +128,7 @@ export type RenderSegment = {
 export declare function renderSegments(segments: RenderSegment[] | null, bound: Record<string, unknown>): string;
 /** A schema-materialized identifier: typed fields plus provenance. */
 export type ParsingCompatibility = "strict" | "parslet";
+export type FailureReporter = "default" | "deepest";
 export type CompatibilityEnvelope = {
     ok: true;
     shape: unknown;

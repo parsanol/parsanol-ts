@@ -21,8 +21,8 @@ with tempfile.TemporaryDirectory(prefix='parsanol-engine-build-')as temporary:
  shutil.copyfile(lock,temporary/'Cargo.lock')
  subprocess.run([args.cargo,'rustc','--release','--locked','--manifest-path',str(temporary/'Cargo.toml'),'-p','parsanol','--lib','--target','wasm32-unknown-unknown','--','-C','link-arg=-zstack-size=8388608'],env=env,check=True)
  wasm=args.target_dir.resolve()/'wasm32-unknown-unknown/release/parsanol.wasm'
- for target,directory in [('web','parsanol-web'),('nodejs','parsanol-wasm')]:
+ for target,directory in [('web','parsanol-web')]:
   output=temporary/target;subprocess.run([str(args.bindgen),str(wasm),'--target',target,'--out-dir',str(output)],check=True);dest=ROOT/'vendor'/directory
   for name in ['parsanol.js','parsanol_bg.wasm','parsanol_bg.wasm.d.ts','parsanol.d.ts']:shutil.copyfile(output/name,dest/('parsanol.cjs'if target=='nodejs'and name=='parsanol.js'else name))
   crate_version=re.search(r'(?m)^version\s*=\s*"([^"]+)"',(source/'Cargo.toml').read_text()).group(1);data=json.loads((dest/'BUILT_FROM.json').read_text());data.update(crate_version=crate_version,built_source_commit=head,built_source_tree_equal=True,files={f.name:hashlib.sha256(f.read_bytes()).hexdigest()for f in dest.iterdir()if f.name not in ['BUILT_FROM','BUILT_FROM.json']});(dest/'BUILT_FROM.json').write_text(json.dumps(data,indent=2)+'\n')
-print('built both bindings from '+head)
+print('built the web bindings from '+head)

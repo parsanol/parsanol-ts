@@ -22,7 +22,6 @@
   },
   "files": [
     "dist/",
-    "vendor/parsanol-wasm/",
     "vendor/parsanol-web/"
   ],
   "scripts": {
@@ -37,7 +36,7 @@
     "prepare": "npm run build"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12"
   },
   "license": "MIT",
   "repository": {

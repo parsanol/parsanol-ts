@@ -4,8 +4,9 @@ The PARG artifact runtime for TypeScript: load a checksum-verified
 `.parg` artifact, parse through the parsanol wasm engine, apply the
 artifact's bindings, and materialize schema-driven models.
 
-The engine is the vendored parsanol wasm build (`vendor/parsanol-wasm/`,
-nodejs target) — **no grammar code lives here**; the baked artifact is
+The engine is the vendored parsanol wasm build (`vendor/parsanol-web/`,
+web target, instantiated synchronously from the package bytes on Node) —
+**no grammar code lives here**; the baked artifact is
 the contract.
 
 ## Releases
@@ -74,9 +75,11 @@ editors-and-linters answer.
 
 ## Vendored engine freshness
 
-`vendor/parsanol-wasm/BUILT_FROM` records the parsanol-rs commit the
-wasm was built from; `scripts/check-wasm-freshness.sh` fails when
-parsanol-rs has moved. Refresh with `npm run refresh-wasm`.
+`vendor/parsanol-web/BUILT_FROM.json` records the parsanol-rs commit the
+wasm was built from (`source_commit`) and the file digests;
+`scripts/check-wasm-freshness.sh` fails when parsanol-rs has diverged.
+Refresh from a release with `npm run refresh-web-wasm -- <version>`, or from
+a tested CI build with `--tarball <file> --sha256 <hex>`.
 
 ## Conformance
 
