@@ -4,7 +4,7 @@
 //! (PargArtifactJs) — no grammar code lives in this package; the baked
 //! artifact is the contract.
 import { createHash } from "node:crypto";
-import { createRequire } from "node:module";
+import * as engine from "../vendor/parsanol-web/parsanol.js";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -31,20 +31,16 @@ const packageRootCache = (() => {
 function packageRoot() {
     return packageRootCache;
 }
-// Node and browsers share the one vendored web-target engine. Its ESM glue
-// lives outside the compiled tree, so it is resolved against the package
-// root (require of ESM, Node >= 22.12) and instantiated synchronously from
-// the package's own bytes. Loading is deferred to the first artifact
-// construction: importing this module costs nothing, and the ~1.5 MB wasm
-// compiles only when parsing is real.
-const require = createRequire(import.meta.url);
+// Node and browsers share the one vendored web-target engine; the browser
+// entry imports the same glue. Instantiation is deferred to the first
+// artifact construction and is synchronous from the package's own bytes:
+// importing this module costs nothing, and the ~1.5 MB wasm compiles only
+// when parsing is real.
 let wasmModule = null;
 function wasm() {
     if (wasmModule === null) {
-        const vendor = join(packageRoot(), "vendor", "parsanol-web");
-        const glue = require(join(vendor, "parsanol.js"));
-        glue.initSync({ module: readFileSync(join(vendor, "parsanol_bg.wasm")) });
-        wasmModule = glue;
+        engine.initSync({ module: readFileSync(join(packageRoot(), "vendor", "parsanol-web", "parsanol_bg.wasm")) });
+        wasmModule = engine;
     }
     return wasmModule;
 }

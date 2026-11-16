@@ -26,7 +26,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build && npx tsc -p tsconfig.test.json && node --test dist-test/test/*.test.js",
+    "test": "npm run build && npx tsc -p tsconfig.test.json && node scripts/stage-test-vendor.mjs && node --test dist-test/test/*.test.js",
     "refresh-wasm": "bash scripts/refresh-wasm.sh",
     "prepublishOnly": "npm run build",
     "bench": "node bench/bench.mjs",
@@ -36,7 +36,7 @@
     "prepare": "npm run build"
   },
   "engines": {
-    "node": ">=22.12"
+    "node": ">=22"
   },
   "license": "MIT",
   "repository": {

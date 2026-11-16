@@ -47,3 +47,36 @@ jobs:
           path: .browser-evidence/*
           include-hidden-files: true
           if-no-files-found: warn
+
+  packed-node:
+    # The engines contract is Node >= 22: install the packed tarball into a
+    # clean consumer and load it through the package specifier and the
+    # compiled dist path on the oldest supported and the current Node.
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.0.0', '24']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Pack
+        run: |
+          npm install
+          mkdir -p "$RUNNER_TEMP/pack"
+          npm pack --pack-destination "$RUNNER_TEMP/pack"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install the tarball into a clean consumer and import it
+        run: |
+          node --version
+          mkdir -p "$RUNNER_TEMP/consumer"
+          cp scripts/test-packed-node.mjs "$RUNNER_TEMP/consumer/"
+          cd "$RUNNER_TEMP/consumer"
+          echo '{"name":"consumer","private":true,"type":"module"}' > package.json
+          npm install --no-audit --no-fund "$RUNNER_TEMP"/pack/parsanol-*.tgz
+          node test-packed-node.mjs
