@@ -65,6 +65,12 @@ export class PargArtifactJs {
      */
     parseShapeWithCompatibility(entry: string, input: string, compatibility: string): string;
     /**
+     * Explicit reporter without changing existing parseShape defaults.
+     * Compatibility is "strict" or "parslet"; reporter is "default" or
+     * "deepest". The owned JSON result uses the existing shape/error envelope.
+     */
+    parseShapeWithReporter(entry: string, input: string, compatibility: string, reporter: string): string;
+    /**
      * Parse an entry with the native engine; returns the parsanol-shape
      * tree as JSON text.
      */
