@@ -65,6 +65,12 @@ export class PargArtifactJs {
      */
     parseShapeWithCompatibility(entry: string, input: string, compatibility: string): string;
     /**
+     * Explicit reporter without changing existing parseShape defaults.
+     * Compatibility is "strict" or "parslet"; reporter is "default" or
+     * "deepest". The owned JSON result uses the existing shape/error envelope.
+     */
+    parseShapeWithReporter(entry: string, input: string, compatibility: string, reporter: string): string;
+    /**
      * Parse an entry with the native engine; returns the parsanol-shape
      * tree as JSON text.
      */
@@ -200,6 +206,7 @@ export interface InitOutput {
     readonly pargartifactjs_parseShape: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
     readonly pargartifactjs_parseShapeRecovering: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
     readonly pargartifactjs_parseShapeWithCompatibility: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
+    readonly pargartifactjs_parseShapeWithReporter: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => [number, number, number];
     readonly pargartifactjs_runTests: (a: number) => [number, number, number];
     readonly pargartifactjs_schema: (a: number) => [number, number, number];
     readonly pargartifactjs_schemaTypescript: (a: number) => [number, number, number];
@@ -227,6 +234,7 @@ export interface InitOutput {
     readonly parsanol_parg_parse: (a: number, b: number) => number;
     readonly parsanol_parg_parse_recovering: (a: number, b: number, c: number) => number;
     readonly parsanol_parg_parse_with_compatibility: (a: number, b: number, c: number, d: number) => number;
+    readonly parsanol_parg_parse_with_reporter: (a: number, b: number, c: number, d: number, e: number) => number;
     readonly parsanol_parse: (a: number, b: number, c: number) => number;
     readonly parsanol_parse_end_pos: (a: number, b: number) => number;
     readonly parsanol_parse_simple: (a: number, b: number) => number;

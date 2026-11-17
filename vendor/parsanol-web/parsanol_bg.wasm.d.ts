@@ -14,6 +14,7 @@ export const pargartifactjs_parseAndBind: (a: number, b: number, c: number, d: n
 export const pargartifactjs_parseShape: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
 export const pargartifactjs_parseShapeRecovering: (a: number, b: number, c: number, d: number, e: number) => [number, number, number];
 export const pargartifactjs_parseShapeWithCompatibility: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
+export const pargartifactjs_parseShapeWithReporter: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => [number, number, number];
 export const pargartifactjs_runTests: (a: number) => [number, number, number];
 export const pargartifactjs_schema: (a: number) => [number, number, number];
 export const pargartifactjs_schemaTypescript: (a: number) => [number, number, number];
@@ -41,6 +42,7 @@ export const parsanol_parg_generate: (a: number, b: number, c: number) => number
 export const parsanol_parg_parse: (a: number, b: number) => number;
 export const parsanol_parg_parse_recovering: (a: number, b: number, c: number) => number;
 export const parsanol_parg_parse_with_compatibility: (a: number, b: number, c: number, d: number) => number;
+export const parsanol_parg_parse_with_reporter: (a: number, b: number, c: number, d: number, e: number) => number;
 export const parsanol_parse: (a: number, b: number, c: number) => number;
 export const parsanol_parse_end_pos: (a: number, b: number) => number;
 export const parsanol_parse_simple: (a: number, b: number) => number;
