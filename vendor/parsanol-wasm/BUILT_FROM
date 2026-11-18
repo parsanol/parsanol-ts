@@ -1,2 +1,2 @@
-944badc693ac7912fb04a2185df4418169934b00
-built with: wasm-pack build --target=nodejs --features wasm (from parsanol-rs/parsanol)
+873b289627d89e1a18dd54995e1aa936c39c6710
+built with: the candidate recipe (bindgen 0.2.130, -zstack-size=8388608) from parsanol-rs/parsanol
