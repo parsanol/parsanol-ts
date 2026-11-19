@@ -128,3 +128,12 @@ depth-64 Amath shapes, which exceed serde JSON's implicit 127-container guard.
 
 A resource abort leaves the artifact reusable and freeable. Generic VM/host errors
 retain their original type; they are never relabeled as a depth error.
+
+The 1024 budget does not always fit the host stack. A warm Node process, or a
+parse started from deep in the JavaScript stack, can overflow the host stack
+inside the WASM call and throw `RangeError`. Such a trap skips the WASM stack
+cleanup, so that instance would fail every later call with "memory access out
+of bounds". In Node, after a `RangeError` or `WebAssembly.RuntimeError` from a
+native call, the runtime drops that engine instance and rebuilds every
+`PargRuntime` artifact on a fresh one before its next call. The error is
+rethrown unchanged. The browser entry does not re-instantiate yet.
