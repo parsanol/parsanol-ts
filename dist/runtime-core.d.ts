@@ -24,6 +24,12 @@ export declare class ShapeDepthLimitExceeded extends Error {
     readonly category = "shape_depth_limit";
     constructor(depth: number, maxDepth: number, message?: string);
 }
+/** A host stack overflow (RangeError) or wasm trap (RuntimeError) inside a
+ * native call. A trap unwinds the host frames without running the wasm
+ * epilogues, so the instance's linear-memory stack pointer and allocator
+ * state are no longer trustworthy: later calls on that instance can fail
+ * with "memory access out of bounds" even for trivial input. */
+export declare function isEngineTrap(error: unknown): boolean;
 /** A field requirement from the binding-requirements schema. */
 export interface FieldRequirement {
     type: string;
@@ -45,7 +51,9 @@ export type Schema = Record<string, EntrySchema>;
  * Construction throws when the checksum does not verify.
  */
 export declare class PargRuntimeCore {
-    readonly artifact: PargArtifactJs;
+    /** The native artifact handle. Replaced after an engine trap, when the
+     * entry re-instantiates the wasm engine (see `isEngineTrap`). */
+    artifact: PargArtifactJs;
     readonly schema: Schema;
     readonly renderSpec: Record<string, RenderSegment[]>;
     readonly entry: string;
@@ -62,10 +70,24 @@ export declare class PargRuntimeCore {
      * baked before the field existed (parsanol >= 1.3.117 / rs 0.19.14). */
     readonly semanticsHash: string | null;
     readonly envelope: Record<string, unknown>;
-    constructor(artifactJson: string, entry: string | undefined, engine: () => WasmModule);
+    private readonly artifactJson;
+    private readonly engine;
+    private readonly resetEngine;
+    private module;
+    /** `resetEngine` drops a trapped engine so the next `engine()` call
+     * instantiates a fresh one; entries without it keep the old behavior. */
+    constructor(artifactJson: string, entry: string | undefined, engine: () => WasmModule, resetEngine?: (engine: WasmModule) => void);
     /** The wire-format family ("parsanol-tree/v2"): a shape bump requires a
      * new engine family; same-shape artifacts parse identically forever. */
     get shape(): string | null;
+    /** Run one native call. After an engine trap the entry drops the trapped
+     * instance and this runtime rebuilds its artifact on a fresh one, so one
+     * refused input cannot break every later parse in the process. The
+     * original error is rethrown unchanged. */
+    private native;
+    /** Rebuild the artifact on the current engine. The old handle belongs to
+     * the dropped instance and is not freed through it. */
+    private rebind;
     /** Parse with the native wasm engine; returns the parsanol-shape tree. */
     parseShape(input: string): unknown;
     /** Explicit historical memo/causal-diagnostic policy; old APIs remain strict.

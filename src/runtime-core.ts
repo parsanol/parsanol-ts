@@ -45,6 +45,15 @@ function nativeResource(value: unknown): RecursionLimitExceeded | CallDepthLimit
 }
 function rethrowNative(error: unknown): never { throw nativeResource(error) ?? error; }
 
+/** A host stack overflow (RangeError) or wasm trap (RuntimeError) inside a
+ * native call. A trap unwinds the host frames without running the wasm
+ * epilogues, so the instance's linear-memory stack pointer and allocator
+ * state are no longer trustworthy: later calls on that instance can fail
+ * with "memory access out of bounds" even for trivial input. */
+export function isEngineTrap(error: unknown): boolean {
+  return error instanceof RangeError || error instanceof WebAssembly.RuntimeError;
+}
+
 /** A field requirement from the binding-requirements schema. */
 export interface FieldRequirement {
   type: string;
@@ -66,7 +75,9 @@ export type Schema = Record<string, EntrySchema>;
  * Construction throws when the checksum does not verify.
  */
 export class PargRuntimeCore {
-  readonly artifact: PargArtifactJs;
+  /** The native artifact handle. Replaced after an engine trap, when the
+   * entry re-instantiates the wasm engine (see `isEngineTrap`). */
+  artifact: PargArtifactJs;
   readonly schema: Schema;
   readonly renderSpec: Record<string, RenderSegment[]>;
   readonly entry: string;
@@ -88,7 +99,19 @@ export class PargRuntimeCore {
 
   readonly envelope: Record<string, unknown>;
 
-  constructor(artifactJson: string, entry: string | undefined, engine: () => WasmModule) {
+  private readonly artifactJson: string;
+  private readonly engine: () => WasmModule;
+  private readonly resetEngine: ((engine: WasmModule) => void) | undefined;
+  private module: WasmModule;
+
+  /** `resetEngine` drops a trapped engine so the next `engine()` call
+   * instantiates a fresh one; entries without it keep the old behavior. */
+  constructor(
+    artifactJson: string,
+    entry: string | undefined,
+    engine: () => WasmModule,
+    resetEngine?: (engine: WasmModule) => void,
+  ) {
     const parsed = JSON.parse(artifactJson) as Record<string, unknown>;
     this.envelope = parsed;
     // Dynamic artifacts (parsanol-ruby#129 runtime state / custom atoms)
@@ -102,7 +125,11 @@ export class PargRuntimeCore {
           "only on a Ruby runtime (parsanol-ruby#129)",
       );
     }
-    this.artifact = new (engine().PargArtifactJs)(artifactJson);
+    this.artifactJson = artifactJson;
+    this.engine = engine;
+    this.resetEngine = resetEngine;
+    this.module = engine();
+    this.artifact = new this.module.PargArtifactJs(artifactJson);
     this.schema = JSON.parse(this.artifact.schema()) as Schema;
     this.renderSpec =
       (parsed["render"] as Record<string, RenderSegment[]>) ?? {};
@@ -122,9 +149,34 @@ export class PargRuntimeCore {
     return (this.envelope["shape"] as string | undefined) ?? null;
   }
 
+  /** Run one native call. After an engine trap the entry drops the trapped
+   * instance and this runtime rebuilds its artifact on a fresh one, so one
+   * refused input cannot break every later parse in the process. The
+   * original error is rethrown unchanged. */
+  private native<T>(call: (artifact: PargArtifactJs) => T): T {
+    if (this.engine() !== this.module) this.rebind();
+    try {
+      return call(this.artifact);
+    } catch (error) {
+      if (this.resetEngine && isEngineTrap(error)) {
+        this.resetEngine(this.module);
+        try { this.rebind(); } catch { /* retried on the next call */ }
+      }
+      throw error;
+    }
+  }
+
+  /** Rebuild the artifact on the current engine. The old handle belongs to
+   * the dropped instance and is not freed through it. */
+  private rebind(): void {
+    const module = this.engine();
+    this.artifact = new module.PargArtifactJs(this.artifactJson);
+    this.module = module;
+  }
+
   /** Parse with the native wasm engine; returns the parsanol-shape tree. */
   parseShape(input: string): unknown {
-    try { return JSON.parse(this.artifact.parseShape(this.entry, input)); }
+    try { return JSON.parse(this.native(artifact => artifact.parseShape(this.entry, input))); }
     catch (error) { return rethrowNative(error); }
   }
 
@@ -135,7 +187,7 @@ export class PargRuntimeCore {
       throw new Error("native engine does not expose explicit parsing compatibility");
     }
     try {
-      const result = JSON.parse(this.artifact.parseShapeWithCompatibility(this.entry, input, compatibility));
+      const result = JSON.parse(this.native(artifact => artifact.parseShapeWithCompatibility(this.entry, input, compatibility)));
       const resource = nativeResource(result?.error);
       if (resource) throw resource;
       return result;
@@ -149,13 +201,13 @@ export class PargRuntimeCore {
    * observed before the failure plus the failure wire.
    */
   parseShapeRecovering(input: string): RecoveryEnvelope {
-    try { return JSON.parse(this.artifact.parseShapeRecovering(this.entry, input)); }
+    try { return JSON.parse(this.native(artifact => artifact.parseShapeRecovering(this.entry, input))); }
     catch (error) { return rethrowNative(error); }
   }
 
   /** Apply the entry's bindings to a parsanol-shape tree. */
   applyBindings(shape: unknown): Record<string, unknown> {
-    try { return JSON.parse(this.artifact.applyBindings(this.entry, JSON.stringify(shape))); }
+    try { return JSON.parse(this.native(artifact => artifact.applyBindings(this.entry, JSON.stringify(shape)))); }
     catch (error) { return rethrowNative(error); }
   }
 
@@ -170,14 +222,14 @@ export class PargRuntimeCore {
     shape: unknown,
   ): Record<string, unknown> {
     try {
-      return JSON.parse(this.artifact.applyBindingsArtifact(bindingsJson, this.entry, JSON.stringify(shape)));
+      return JSON.parse(this.native(artifact => artifact.applyBindingsArtifact(bindingsJson, this.entry, JSON.stringify(shape))));
     } catch (error) { return rethrowNative(error); }
   }
 
   /** Parse and bind in one step. */
   parseAndBind(input: string): Record<string, unknown> | null {
     try {
-      return JSON.parse(this.artifact.parseAndBind(this.entry, input));
+      return JSON.parse(this.native(artifact => artifact.parseAndBind(this.entry, input)));
     } catch {
       return null;
     }
@@ -228,7 +280,7 @@ export class PargRuntimeCore {
 
   /** Run the artifact's embedded tests; empty list means green. */
   runTests(): string[] {
-    return JSON.parse(this.artifact.runTests()) as string[];
+    return JSON.parse(this.native(artifact => artifact.runTests())) as string[];
   }
 }
 

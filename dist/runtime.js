@@ -17,7 +17,15 @@ import { dirname, join } from "node:path";
  * @throws when the source does not parse or the grammar is invalid.
  */
 export function compileSource(source) {
-    return JSON.parse(wasm().compileSource(source));
+    const engine = wasm();
+    try {
+        return JSON.parse(engine.compileSource(source));
+    }
+    catch (error) {
+        if (isEngineTrap(error))
+            resetWasm(engine);
+        throw error;
+    }
 }
 /** Walk up from this module to the package root (which holds package.json). */
 const packageRootCache = (() => {
@@ -37,19 +45,31 @@ function packageRoot() {
 // nothing, and the ~1.5 MB wasm compiles only when parsing is real.
 const require = createRequire(import.meta.url);
 let wasmModule = null;
+function enginePath() {
+    return join(packageRoot(), "vendor", "parsanol-wasm", "parsanol.cjs");
+}
 function wasm() {
     if (wasmModule === null) {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        wasmModule = require(join(packageRoot(), "vendor", "parsanol-wasm", "parsanol.cjs"));
+        wasmModule = require(enginePath());
     }
     return wasmModule;
 }
-import { PargRuntimeCore } from "./runtime-core.js";
+/** Drop a trapped engine: the bindings instantiate the wasm when the module
+ * loads, so evicting it from the require cache makes the next `wasm()` call
+ * build a fresh instance. A stale caller cannot drop a newer engine. */
+function resetWasm(engine) {
+    if (wasmModule !== engine)
+        return;
+    wasmModule = null;
+    delete require.cache[require.resolve(enginePath())];
+}
+import { PargRuntimeCore, isEngineTrap } from "./runtime-core.js";
 export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded, ShapeDepthLimitExceeded } from "./runtime-core.js";
 /** Node entry: preserves synchronous WASM initialization and filesystem helpers. */
 export class PargRuntime extends PargRuntimeCore {
     constructor(artifactJson, entry) {
-        super(artifactJson, entry, wasm);
+        super(artifactJson, entry, wasm, resetWasm);
     }
     /** True when this artifact was compiled from `source` (the current .parg
      * revision). The compiler bakes a bare hex digest; artifacts without the
