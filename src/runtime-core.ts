@@ -195,6 +195,29 @@ export class PargRuntimeCore {
   }
 
   /**
+   * Parse with an explicit failure reporter. `"deepest"` reports the
+   * furthest failure (how the Ruby engine reports refusals); `"default"`
+   * keeps the existing parseShape cause selection. The result is the
+   * shape-or-error envelope:
+   * `{ ok: true, shape } | { ok: false, error }`.
+   */
+  parseShapeWithReporter(
+    input: string,
+    compatibility: ParsingCompatibility,
+    reporter: FailureReporter = "default",
+  ): ReporterEnvelope {
+    if (typeof this.artifact.parseShapeWithReporter !== "function") {
+      throw new Error("native engine does not expose the failure reporter");
+    }
+    try {
+      const result = JSON.parse(this.native(artifact => artifact.parseShapeWithReporter(this.entry, input, compatibility, reporter)));
+      const resource = nativeResource(result?.error);
+      if (resource) throw resource;
+      return result;
+    } catch (error) { return rethrowNative(error); }
+  }
+
+  /**
    * Best-effort syntax recovery. Resource aborts throw typed errors. Success returns
    * `{ ok: true, shape }`; failure returns
    * `{ ok: false, captures, error, consumed_upto }` — the captures
@@ -328,6 +351,16 @@ export type ParsingCompatibility = "strict" | "parslet";
 export type CompatibilityEnvelope =
   | { ok: true; shape: unknown }
   | { ok: false; error: { offset: number; ranked: [number, string[]][] } };
+
+/** The failure-report mode for parseShapeWithReporter: "deepest" reports
+ * the furthest failure (the Ruby engine's refusal report). */
+export type FailureReporter = "default" | "deepest";
+export type ReporterError =
+  | { offset: number; ranked: [number, string[]][] }
+  | { category: "recursion_limit"; offset: null; depth: number; max_depth: number };
+export type ReporterEnvelope =
+  | { ok: true; shape: unknown }
+  | { ok: false; error: ReporterError };
 
 export interface RecoveryError {
   offset: number;
