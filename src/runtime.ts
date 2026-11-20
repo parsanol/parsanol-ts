@@ -73,7 +73,7 @@ function resetWasm(engine: WasmModule): void {
 
 import { PargRuntimeCore, isEngineTrap, type WasmModule } from "./runtime-core.js";
 export { deriveTemplate, renderSegments, materializeFromSchema, RecursionLimitExceeded, CallDepthLimitExceeded, ShapeDepthLimitExceeded } from "./runtime-core.js";
-export type { FieldRequirement, EntrySchema, Schema, RenderSegment, RecoveryError, RecoveryEnvelope, ParsingCompatibility, CompatibilityEnvelope, Materialized } from "./runtime-core.js";
+export type { FieldRequirement, EntrySchema, Schema, RenderSegment, RecoveryError, RecoveryEnvelope, ParsingCompatibility, CompatibilityEnvelope, FailureReporter, ReporterError, ReporterEnvelope, Materialized } from "./runtime-core.js";
 
 /** Node entry: preserves synchronous WASM initialization and filesystem helpers. */
 export class PargRuntime extends PargRuntimeCore {
