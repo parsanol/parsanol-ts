@@ -177,6 +177,28 @@ export class PargRuntimeCore {
         }
     }
     /**
+     * Parse with an explicit failure reporter. `"deepest"` reports the
+     * furthest failure (how the Ruby engine reports refusals); `"default"`
+     * keeps the existing parseShape cause selection. The result is the
+     * shape-or-error envelope:
+     * `{ ok: true, shape } | { ok: false, error }`.
+     */
+    parseShapeWithReporter(input, compatibility, reporter = "default") {
+        if (typeof this.artifact.parseShapeWithReporter !== "function") {
+            throw new Error("native engine does not expose the failure reporter");
+        }
+        try {
+            const result = JSON.parse(this.native(artifact => artifact.parseShapeWithReporter(this.entry, input, compatibility, reporter)));
+            const resource = nativeResource(result?.error);
+            if (resource)
+                throw resource;
+            return result;
+        }
+        catch (error) {
+            return rethrowNative(error);
+        }
+    }
+    /**
      * Best-effort syntax recovery. Resource aborts throw typed errors. Success returns
      * `{ ok: true, shape }`; failure returns
      * `{ ok: false, captures, error, consumed_upto }` — the captures

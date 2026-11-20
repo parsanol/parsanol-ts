@@ -94,6 +94,14 @@ export declare class PargRuntimeCore {
      * This is a parse result, not a best-effort recovery capture envelope. */
     parseShapeWithCompatibility(input: string, compatibility: ParsingCompatibility): CompatibilityEnvelope;
     /**
+     * Parse with an explicit failure reporter. `"deepest"` reports the
+     * furthest failure (how the Ruby engine reports refusals); `"default"`
+     * keeps the existing parseShape cause selection. The result is the
+     * shape-or-error envelope:
+     * `{ ok: true, shape } | { ok: false, error }`.
+     */
+    parseShapeWithReporter(input: string, compatibility: ParsingCompatibility, reporter?: FailureReporter): ReporterEnvelope;
+    /**
      * Best-effort syntax recovery. Resource aborts throw typed errors. Success returns
      * `{ ok: true, shape }`; failure returns
      * `{ ok: false, captures, error, consumed_upto }` — the captures
@@ -155,6 +163,25 @@ export type CompatibilityEnvelope = {
         offset: number;
         ranked: [number, string[]][];
     };
+};
+/** The failure-report mode for parseShapeWithReporter: "deepest" reports
+ * the furthest failure (the Ruby engine's refusal report). */
+export type FailureReporter = "default" | "deepest";
+export type ReporterError = {
+    offset: number;
+    ranked: [number, string[]][];
+} | {
+    category: "recursion_limit";
+    offset: null;
+    depth: number;
+    max_depth: number;
+};
+export type ReporterEnvelope = {
+    ok: true;
+    shape: unknown;
+} | {
+    ok: false;
+    error: ReporterError;
 };
 export interface RecoveryError {
     offset: number;
