@@ -1,23 +1,23 @@
 {
   "package": "@parsanol/wasm",
   "version": "1.5.4",
-  "crate_version": "1.5.11",
+  "crate_version": "1.5.12",
   "target": "web",
   "repository": "https://github.com/parsanol/parsanol-rs",
   "tarball": "https://registry.npmjs.org/@parsanol/wasm/-/wasm-1.5.4.tgz",
   "integrity": "sha512-oeYj52TYg6DomXRIP4iyY5Yj3NwdljcMUok/LQlozO4OlMqyYfvrReaihf2ox9oqqk5aLi0UcQrEYuEfOFRtmw==",
   "tarball_sha256": "6f9ea6f9277776f9ac96e7423df54693aa5dcce8cf1c7abef85b39fa724b3b3c",
   "files": {
-    "parsanol_bg.wasm": "1494cbe686d49000a3ed08268959478123544d624b79502bd1d7a59ee98d0d89",
-    "parsanol.d.ts": "96c764221523a7bc96fafa39d150aaff59fd09805adb164092bdf6887c0f6236",
+    "parsanol_bg.wasm": "fccc5444872df1e56bc9fb5896bfce4a7f17bd15fb4fb62fa1ba98eec437598d",
+    "parsanol.d.ts": "ee76dbae6b9245e7ffbc7ed4e43f4c81b5917e74c080625f574bfafd7d4809eb",
     "LICENSE": "47f4778bc0bfbeb3614d173dd1ec09ddd8cab994039193e2d3de2edcd7886c7e",
     "parsanol.js": "34d240782519e18c8ff04eb2478242ed311b41b8239a8dbf1901ae7e3fc7afae",
-    "parsanol_bg.wasm.d.ts": "3d8cce04814fe18fcd9cd3780e5f0431e6ebe61d58de9a3cb8baab12afb7fcf5",
+    "parsanol_bg.wasm.d.ts": "043dbc4f52896ca16d02310710a9782c835d07f2997dc77bba51a20148f0edae",
     "README.md": "577c2d75ac98c331379a50698624b68c773eb4603648108f80f4399fde33d339"
   },
-  "source_commit": "8a40a23d227802177c8e8e1ed13d057308869cf2",
-  "lockfile_sha256": "0032dd1c5a3435a851863cba724460df9371977d1a4a23a54dd675e74f9a98f1",
-  "built_source_commit": "8a40a23d227802177c8e8e1ed13d057308869cf2",
+  "source_commit": "93ad1c78910388750ead42aa36c5c81dfa37191e",
+  "lockfile_sha256": "887439989d25b4115ec660f59abb8d2b898e32015e23d66cbff7bce9994dda73",
+  "built_source_commit": "93ad1c78910388750ead42aa36c5c81dfa37191e",
   "built_source_tree_equal": true,
-  "upstream_base": "603d24b86f6ba7cc55ac04d872ee8bd878d123a9"
+  "upstream_base": "8a40a23d227802177c8e8e1ed13d057308869cf2"
 }
