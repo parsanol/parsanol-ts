@@ -199,6 +199,42 @@ class PargArtifactJs {
         return takeFromExternrefTable0(ret[0]);
     }
     /**
+     * Explicit finite VM atom-depth budget (1..=8192), local to this call.
+     * The default API keeps its 1024-call WASM guard. This does not change the
+     * rule-recursion or shape-JSON budgets, nor guarantee a host stack size.
+     * @param {string} entry
+     * @param {string} input
+     * @param {string} compatibility
+     * @param {string} reporter
+     * @param {number} max_call_depth
+     * @returns {string}
+     */
+    parseShapeWithCallDepth(entry, input, compatibility, reporter, max_call_depth) {
+        const val5 = +max_call_depth;
+        let ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3;
+        try {
+            ptr0 = passStringToWasm0(entry, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len0 = WASM_VECTOR_LEN;
+            ptr1 = passStringToWasm0(input, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len1 = WASM_VECTOR_LEN;
+            ptr2 = passStringToWasm0(compatibility, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len2 = WASM_VECTOR_LEN;
+            ptr3 = passStringToWasm0(reporter, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len3 = WASM_VECTOR_LEN;
+        } catch (e) {
+            if (ptr3) { wasm.__wbindgen_free(ptr3, len3 * 1, 1); }
+            if (ptr2) { wasm.__wbindgen_free(ptr2, len2 * 1, 1); }
+            if (ptr1) { wasm.__wbindgen_free(ptr1, len1 * 1, 1); }
+            if (ptr0) { wasm.__wbindgen_free(ptr0, len0 * 1, 1); }
+            throw e;
+        }
+        const ret = wasm.pargartifactjs_parseShapeWithCallDepth(this.__wbg_ptr, ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3, val5);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
      * Explicit compatibility without changing parseShape defaults.
      * The JSON envelope contains either shape or causal error diagnostics;
      * it does not claim best-effort recovery captures.
