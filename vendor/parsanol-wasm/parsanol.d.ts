@@ -59,6 +59,12 @@ export class PargArtifactJs {
      */
     parseShapeRecovering(entry: string, input: string): string;
     /**
+     * Explicit finite VM atom-depth budget (1..=8192), local to this call.
+     * The default API keeps its 1024-call WASM guard. This does not change the
+     * rule-recursion or shape-JSON budgets, nor guarantee a host stack size.
+     */
+    parseShapeWithCallDepth(entry: string, input: string, compatibility: string, reporter: string, max_call_depth: number): string;
+    /**
      * Explicit compatibility without changing parseShape defaults.
      * The JSON envelope contains either shape or causal error diagnostics;
      * it does not claim best-effort recovery captures.
