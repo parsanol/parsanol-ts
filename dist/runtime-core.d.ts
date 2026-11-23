@@ -101,6 +101,10 @@ export declare class PargRuntimeCore {
      * `{ ok: true, shape } | { ok: false, error }`.
      */
     parseShapeWithReporter(input: string, compatibility: ParsingCompatibility, reporter?: FailureReporter): ReporterEnvelope;
+    /** Parse with an explicit finite VM-call budget for this invocation only.
+     * Rule-reference and shape-JSON limits remain independent. Older methods
+     * retain the engine's default budget. */
+    parseShapeWithCallDepth(input: string, compatibility: ParsingCompatibility, reporter: FailureReporter, maxCallDepth: number): ReporterEnvelope;
     /**
      * Best-effort syntax recovery. Resource aborts throw typed errors. Success returns
      * `{ ok: true, shape }`; failure returns
