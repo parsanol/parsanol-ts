@@ -217,6 +217,31 @@ export class PargRuntimeCore {
     } catch (error) { return rethrowNative(error); }
   }
 
+  /** Parse with an explicit finite VM-call budget for this invocation only.
+   * Rule-reference and shape-JSON limits remain independent. Older methods
+   * retain the engine's default budget. */
+  parseShapeWithCallDepth(
+    input: string,
+    compatibility: ParsingCompatibility,
+    reporter: FailureReporter,
+    maxCallDepth: number,
+  ): ReporterEnvelope {
+    if (!Number.isInteger(maxCallDepth) || maxCallDepth < 1 || maxCallDepth > 8192) {
+      throw new RangeError("maxCallDepth must be an integer in 1..8192");
+    }
+    try {
+      const result = JSON.parse(this.native(artifact => {
+        if (typeof artifact.parseShapeWithCallDepth !== "function") {
+          throw new Error("native engine does not expose per-call depth");
+        }
+        return artifact.parseShapeWithCallDepth(this.entry, input, compatibility, reporter, maxCallDepth);
+      }));
+      const resource = nativeResource(result?.error);
+      if (resource) throw resource;
+      return result;
+    } catch (error) { return rethrowNative(error); }
+  }
+
   /**
    * Best-effort syntax recovery. Resource aborts throw typed errors. Success returns
    * `{ ok: true, shape }`; failure returns

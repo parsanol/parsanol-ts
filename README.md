@@ -121,6 +121,13 @@ its 1000 rule-reference recursion budget and additionally limits simultaneous VM
 atom calls to 1024, before the host call stack can throw and strand a borrow.
 `RecursionLimitExceeded` and `CallDepthLimitExceeded` expose `category`, `depth`
 and `maxDepth`. These budgets count engine calls, not parentheses in user input.
+For an explicit per-invocation budget, call
+`runtime.parseShapeWithCallDepth(input, compatibility, reporter, maxCallDepth)`.
+It returns the same shape-or-refusal envelope as `parseShapeWithReporter` and
+accepts only integer budgets in `1..8192`. Existing methods retain their default
+budget; rule-reference and shape limits are independent. Both Node and browser
+entries expose this method.
+
 Binding shape JSON has a separate 512-container budget. `applyBindings` and
 `applyBindingsArtifact` throw `ShapeDepthLimitExceeded` (`category: "shape_depth_limit"`,
 `depth`, `maxDepth`) above that budget. The bounded bridge accepts parser-produced
