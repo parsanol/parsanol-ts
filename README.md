@@ -126,7 +126,12 @@ For an explicit per-invocation budget, call
 It returns the same shape-or-refusal envelope as `parseShapeWithReporter` and
 accepts only integer budgets in `1..8192`. Existing methods retain their default
 budget; rule-reference and shape limits are independent. Both Node and browser
-entries expose this method.
+entries expose this method. The budget is the enforcement ceiling, not a depth
+guarantee: recursion past the host stack surfaces as a host `RangeError` before
+the budget is reached (engine frames grew across releases, so the achievable
+depth is engine- and host-specific). A stack-exhausted call can leave the
+artifact's ownership guard stuck — it still parses, but `free()` may throw;
+drop the whole runtime in that case instead.
 
 Binding shape JSON has a separate 512-container budget. `applyBindings` and
 `applyBindingsArtifact` throw `ShapeDepthLimitExceeded` (`category: "shape_depth_limit"`,

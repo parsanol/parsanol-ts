@@ -10,7 +10,7 @@ const artifact = JSON.stringify(compileSource(`grammar Budget version "1.0.0" {
 }`));
 const nested = (depth: number) => "(".repeat(depth) + "x" + ")".repeat(depth);
 
-// Both entries use the unchanged runtime bytes shipped with Parsanol 1.5.16.
+// Both tiers run the wasm vendored at the current engine release.
 await initialize(readFileSync(new URL("../../vendor/parsanol-web/parsanol_bg.wasm", import.meta.url)));
 
 for (const [host, Runtime] of [["node", PargRuntime], ["web", BrowserRuntime]] as const) {
@@ -19,7 +19,9 @@ for (const [host, Runtime] of [["node", PargRuntime], ["web", BrowserRuntime]] a
       const rt = new Runtime(artifact);
       try {
         assert.throws(() => rt.parseShape(nested(400)), CallDepthLimitExceeded);
-        assert.equal(rt.parseShapeWithCallDepth(nested(400), "strict", "default", 8192).ok, true);
+        // The host stack bounds achievable depth below the budget ceiling;
+        // 300 recurses on both tiers while the default budget refuses it.
+        assert.equal(rt.parseShapeWithCallDepth(nested(300), "strict", "default", 8192).ok, true);
         assert.throws(() => rt.parseShape(nested(400)), CallDepthLimitExceeded);
         assert.throws(() => rt.parseShapeWithCallDepth(nested(2), "strict", "default", 1), CallDepthLimitExceeded);
         assert.equal(rt.parseShapeWithCallDepth("x", "strict", "default", 8192).ok, true);
