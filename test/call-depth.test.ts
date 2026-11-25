@@ -19,9 +19,11 @@ for (const [host, Runtime] of [["node", PargRuntime], ["web", BrowserRuntime]] a
       const rt = new Runtime(artifact);
       try {
         assert.throws(() => rt.parseShape(nested(400)), CallDepthLimitExceeded);
-        // The host stack bounds achievable depth below the budget ceiling;
-        // 300 recurses on both tiers while the default budget refuses it.
-        assert.equal(rt.parseShapeWithCallDepth(nested(300), "strict", "default", 8192).ok, true);
+        // The engine 1.5.22 frame diet folded the named-dispatch chain
+        // (one wasm frame less per grammar level), so 400 recurses on
+        // both tiers while the default budget refuses it; the ceiling
+        // stays host-dependent beyond that.
+        assert.equal(rt.parseShapeWithCallDepth(nested(400), "strict", "default", 8192).ok, true);
         assert.throws(() => rt.parseShape(nested(400)), CallDepthLimitExceeded);
         assert.throws(() => rt.parseShapeWithCallDepth(nested(2), "strict", "default", 1), CallDepthLimitExceeded);
         assert.equal(rt.parseShapeWithCallDepth("x", "strict", "default", 8192).ok, true);
@@ -63,6 +65,14 @@ for (const [host, Runtime] of [["node", PargRuntime], ["web", BrowserRuntime]] a
         });
         assert.equal(rt.parseShapeWithCallDepth("x", "strict", "default", 8192).ok, true);
       } finally { rt.artifact.free(); }
+    });
+
+    it("disposes cleanly after a host-stack-exhausted call", () => {
+      const rt = new Runtime(artifact);
+      try { rt.parseShapeWithCallDepth(nested(600), "strict", "default", 8192); }
+      catch { /* the host RangeError — the durable contract is the disposal */ }
+      rt.dispose();
+      rt.dispose();
     });
 
     it("fails explicitly with an older injected engine", () => {
