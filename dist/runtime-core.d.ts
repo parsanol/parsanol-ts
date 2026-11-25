@@ -58,6 +58,7 @@ export declare class PargRuntimeCore {
     readonly renderSpec: Record<string, RenderSegment[]>;
     readonly entry: string;
     readonly defaultEntry: string | null;
+    private disposed;
     /** parsanol-ts#5 provenance: SHA-256 of the .parg source text and the
      * compiler version. Null for artifacts compiled before these fields
      * existed (unverifiable, not stale). */
@@ -90,6 +91,12 @@ export declare class PargRuntimeCore {
     private rebind;
     /** Parse with the native wasm engine; returns the parsanol-shape tree. */
     parseShape(input: string): unknown;
+    /** Release the native artifact, tolerating a stranded ownership guard.
+     * A host-stack-exhausted parse can leave the wasm-bindgen borrow flag
+     * set (the trap skips the Rust drop), after which the generated
+     * `free()` throws; the runtime is still disposable — the wasm object
+     * is left to the host GC. Safe to call twice. */
+    dispose(): void;
     /** Explicit historical memo/causal-diagnostic policy; old APIs remain strict.
      * This is a parse result, not a best-effort recovery capture envelope. */
     parseShapeWithCompatibility(input: string, compatibility: ParsingCompatibility): CompatibilityEnvelope;

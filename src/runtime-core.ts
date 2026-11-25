@@ -83,6 +83,7 @@ export class PargRuntimeCore {
   readonly entry: string;
 
   readonly defaultEntry: string | null;
+  private disposed = false;
 
   /** parsanol-ts#5 provenance: SHA-256 of the .parg source text and the
    * compiler version. Null for artifacts compiled before these fields
@@ -178,6 +179,17 @@ export class PargRuntimeCore {
   parseShape(input: string): unknown {
     try { return JSON.parse(this.native(artifact => artifact.parseShape(this.entry, input))); }
     catch (error) { return rethrowNative(error); }
+  }
+
+  /** Release the native artifact, tolerating a stranded ownership guard.
+   * A host-stack-exhausted parse can leave the wasm-bindgen borrow flag
+   * set (the trap skips the Rust drop), after which the generated
+   * `free()` throws; the runtime is still disposable — the wasm object
+   * is left to the host GC. Safe to call twice. */
+  dispose(): void {
+    if (this.disposed) return;
+    this.disposed = true;
+    try { this.artifact.free(); } catch { /* the guard stayed set; GC reclaims */ }
   }
 
   /** Explicit historical memo/causal-diagnostic policy; old APIs remain strict.
