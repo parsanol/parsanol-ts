@@ -1,11 +1,11 @@
 {
   "repository": "https://github.com/parsanol/parsanol-rs",
-  "upstream_base": "60e868d5246d1a88e55dba7e85dbe2ba2bd4cf6f",
-  "source_commit": "a6cd663096aedb8be25f25ccff8890d0becd21c6",
-  "built_source_commit": "a6cd663096aedb8be25f25ccff8890d0becd21c6",
-  "source_tree": "58c2271cf14e0aa644642169d7a5cb089d6d9380",
+  "upstream_base": "0985ab5a647a87f347da51529ea4ee47adbf9324",
+  "source_commit": "e4f8972f34934b48af6d2b033fc9dc766e05f919",
+  "built_source_commit": "e4f8972f34934b48af6d2b033fc9dc766e05f919",
+  "source_tree": "140ed1ded3bbda04174357867fb8cbea94dfec3f",
   "built_source_tree_equal": true,
-  "crate_version": "1.5.19",
+  "crate_version": "1.5.20",
   "unreleased_candidate": false,
   "target": "nodejs",
   "profile": "release",
@@ -17,9 +17,9 @@
     "wasm_vm_atom_calls": 1024
   },
   "lockfile": "scripts/wasm-build/Cargo.lock",
-  "lockfile_sha256": "53945a5a03dbfbbd0cfe1f4e50714d400df1868ba74fa3f7ec3610e0174e6631",
+  "lockfile_sha256": "e6e3f063a947c79d4b6b1b787e73e74a8f498539abecf8fdec56dbfebd828b26",
   "files": {
-    "parsanol_bg.wasm": "3ce85ccbf81ddb666b9e6ad1f7a3b79e8c31c370f7c589776c9d970c40d02fcb",
+    "parsanol_bg.wasm": "e0f9c266fe9e802b5e45ee5e12ea0e8b053523b6d88e706ebfb39ffbc989349f",
     "parsanol.d.ts": "6ab38f3e1b965e02ed5f5c2c325a9c053e01a5ebab81d7edc47bae310d5af7c9",
     "LICENSE": "47f4778bc0bfbeb3614d173dd1ec09ddd8cab994039193e2d3de2edcd7886c7e",
     "parsanol.cjs": "1bad1744a822d3ecfd94f98b54eb04d5af91a019ddc1c357527c4ed906b6f81f",
