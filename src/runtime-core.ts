@@ -414,6 +414,15 @@ export interface RecoveryEnvelope {
   captures?: Record<string, unknown[]>;
   error?: RecoveryError;
   consumed_upto?: number;
+  /** R1.5: the deepest repetition prefix the failed parse matched,
+   * shaped exactly like the root (tagged array; Named-wrapped when the
+   * root rule is named). Null when nothing matched. */
+  partial?: unknown;
+  /** The declarative resync points taken (R2's wire; empty until the
+   * grammar declares resyncs). */
+  resyncs?: unknown[];
+  /** The recovered spans: every prefix the recovery replayed. */
+  recovered_spans?: { offset: number; end: number }[];
 }
 
 export interface Materialized {
