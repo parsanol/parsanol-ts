@@ -104,6 +104,19 @@ synchronous constructor requires initialization first. Pass original artifact
 and binding JSON text unchanged; parsing and reserializing checksum-bound
 resources can change their numeric representations.
 
+A Cloudflare Worker cannot fetch the WASM relative to the module. Import it as
+a WASM module through the `parsanol/wasm` subpath (wrangler/esbuild resolve it
+through the `exports` map) and pass the module to `initialize`:
+
+```ts
+import wasm from "parsanol/wasm";
+import initialize, { PargRuntime } from "parsanol/browser";
+await initialize(wasm);
+const parser = new PargRuntime(artifactJson);
+```
+
+Build scripts can locate the same file with `require.resolve("parsanol/wasm")`.
+
 The browser entry has HTTP `fromURL` instead of Node filesystem helpers. Its
 `compiledFrom(source)` uses asynchronous WebCrypto: `await` its result. The
 Node entry retains its synchronous API. Browser-aware package resolution also
