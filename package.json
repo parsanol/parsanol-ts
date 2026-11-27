@@ -18,12 +18,17 @@
     "./browser": {
       "types": "./dist/browser.d.ts",
       "default": "./dist/browser.js"
+    },
+    "./wasm": {
+      "types": "./wasm.d.ts",
+      "default": "./vendor/parsanol-web/parsanol_bg.wasm"
     }
   },
   "files": [
     "dist/",
     "vendor/parsanol-wasm/",
-    "vendor/parsanol-web/"
+    "vendor/parsanol-web/",
+    "wasm.d.ts"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
